@@ -1,0 +1,126 @@
+{
+  "categories": [
+    {
+      "slug": "huiles-essentielles",
+      "nom": "Huiles essentielles",
+      "unite": "10 ml",
+      "produits": [
+        { "nom": "Huile essentielle d'Arbre à thé", "prix": 4000, "description": "Purifiante, assainissante, favorise le soin des peaux à imperfections.", "image": null },
+        { "nom": "Huile essentielle de Basilic", "prix": 5500, "description": "Favorise le confort digestif et la concentration.", "image": null },
+        { "nom": "Huile essentielle de Bergamote", "prix": 6000, "description": "Calmante, relaxante, favorise l'équilibre émotionnel et le confort digestif.", "image": null },
+        { "nom": "Huile essentielle de Bois de Santal", "prix": 7800, "description": "Relaxante, décongestionnante, favorise la beauté et l'éclat de la peau.", "image": null },
+        { "nom": "Huile essentielle de Cannelle de Ceylan", "prix": 4800, "description": "Tonifiante, stimulante, favorise la vitalité.", "image": null },
+        { "nom": "Huile essentielle de Citron", "prix": 3500, "description": "Tonifiante, purifiante, favorise la vitalité et l'éclat de la peau.", "image": null },
+        { "nom": "Huile essentielle de Citronnelle de Java", "prix": 3500, "description": "Apaisante, purifiante, favorise la détente et le bien-être.", "image": null },
+        { "nom": "Huile essentielle de Citronnelle de Nardus", "prix": 1500, "description": "Purifiante, tonifiante, aide à éloigner naturellement les insectes.", "image": null },
+        { "nom": "Huile essentielle de Clou de Girofle", "prix": 4200, "description": "Favorise la digestion, contribue à une bonne hygiène bucco-dentaire et au confort intestinal.", "image": null },
+        { "nom": "Huile essentielle de Curcuma", "prix": 4200, "description": "Anti-inflammatoire, favorise le confort articulaire, contribue au bien-être digestif.", "image": null },
+        { "nom": "Huile essentielle d'Encens Oliban", "prix": 5500, "description": "Apaisante, relaxante, favorise la méditation et le bien-être spirituel.", "image": null },
+        { "nom": "Huile essentielle d'Eucalyptus globulus", "prix": 3000, "description": "Purifiante, favorise le confort des voies respiratoires.", "image": null },
+        { "nom": "Huile essentielle de Fleur d'oranger", "prix": 5000, "description": "Adoucissante, illumine la peau, favorise la relaxation et le bien-être.", "image": null },
+        { "nom": "Huile essentielle de Fleurs d'Isis", "prix": 5000, "description": "Nourrissante, adoucissante, favorise la détente et contribue à l'éclat de la peau.", "image": null },
+        { "nom": "Huile essentielle de Gingembre", "prix": 5000, "description": "Tonifiante, stimulante, favorise le confort articulaire.", "image": null },
+        { "nom": "Huile essentielle de Jasmin", "prix": 5000, "description": "Relaxante, aide à améliorer la qualité du sommeil, nourrit les peaux sèches et sensibles.", "image": null },
+        { "nom": "Huile essentielle de Laurier", "prix": 5500, "description": "Tonifiante, favorise la beauté des cheveux, aide au confort musculaire et cutané.", "image": null },
+        { "nom": "Huile essentielle de Lavande vraie", "prix": 4000, "description": "Antistress, relaxante, favorise le sommeil et le relâchement musculaire.", "image": null },
+        { "nom": "Huile essentielle de Mandarine", "prix": 4000, "description": "Relaxante, apaisante, favorise la détente et le drainage naturel.", "image": null },
+        { "nom": "Huile essentielle de Menthe poivrée", "prix": 4000, "description": "Rafraîchissante, favorise le confort digestif, aide à réduire les sensations de nausée et de fatigue.", "image": null },
+        { "nom": "Huile essentielle de Niaouli", "prix": 3200, "description": "Purifiante, soutient les défenses naturelles, favorise le confort respiratoire.", "image": null },
+        { "nom": "Huile essentielle d'Orange douce", "prix": 3500, "description": "Relaxante, aide au confort digestif, favorise une peau douce et tonique.", "image": null },
+        { "nom": "Huile essentielle d'Origan", "prix": 4000, "description": "Purifiante, soutient les défenses naturelles, favorise le confort respiratoire.", "image": null },
+        { "nom": "Huile essentielle de Pamplemousse rose", "prix": 4000, "description": "Favorise le drainage naturel, aide à la sensation de légèreté.", "image": null },
+        { "nom": "Huile essentielle de Patchouli", "prix": 4000, "description": "Régénératrice, favorise la beauté de la peau, aide au soin des peaux à imperfections.", "image": null },
+        { "nom": "Huile essentielle de Poivre long", "prix": 3500, "description": "Tonifiante, stimule la vitalité, favorise le confort digestif et articulaire.", "image": null },
+        { "nom": "Huile essentielle de Ravintsara", "prix": 6000, "description": "Soutient les défenses naturelles, favorise le confort respiratoire et aide l'organisme pendant les périodes hivernales.", "image": null },
+        { "nom": "Huile essentielle de Romarin", "prix": 5000, "description": "Stimule la concentration et la vitalité intellectuelle, favorise le confort musculaire et articulaire, aide à maintenir une bonne circulation.", "image": null },
+        { "nom": "Huile essentielle de Rose de Damas", "prix": 5500, "description": "Régénératrice, apaise les peaux sensibles, favorise l'éclat du teint et le bien-être émotionnel.", "image": null },
+        { "nom": "Huile essentielle de Sauge", "prix": 5000, "description": "Favorise l'équilibre hormonal, aide à la relaxation et au bien-être émotionnel.", "image": null },
+        { "nom": "Huile essentielle de Tchayo", "prix": 4800, "description": "Puissant antibiotique, favorise le confort respiratoire et cutané.", "image": null },
+        { "nom": "Huile essentielle de Thé vert", "prix": 3500, "description": "Antioxydante, favorise l'équilibre du métabolisme et la vitalité.", "image": null },
+        { "nom": "Huile essentielle de Thym", "prix": 4000, "description": "Stimulante, décontractante, favorise le confort respiratoire et musculaire.", "image": null },
+        { "nom": "Huile essentielle de Vanille", "prix": 4000, "description": "Antioxydante, aide à préserver l'éclat de la peau, favorise la détente.", "image": null },
+        { "nom": "Huile essentielle de Verveine citronnée", "prix": 4500, "description": "Relaxante, favorise l'équilibre émotionnel et la détente.", "image": null },
+        { "nom": "Huile essentielle d'Ylang-Ylang", "prix": 5000, "description": "Relaxante, favorise l'équilibre émotionnel, aide à la détente.", "image": null },
+        { "nom": "Huile essentielle d'Aglala", "prix": 3500, "description": "Tonifiante, favorise le bien-être général et la vitalité.", "image": null },
+        { "nom": "Huile essentielle d'Ail", "prix": 4500, "description": "Purifiante, soutient les défenses naturelles, favorise le bien-être cardiovasculaire.", "image": null },
+        { "nom": "Huile essentielle de Carotte", "prix": 4000, "description": "Régénératrice, favorise l'éclat de la peau, contribue au maintien d'une peau souple et revitalisée.", "image": null }
+      ]
+    },
+    {
+      "slug": "huiles-vegetales",
+      "nom": "Huiles végétales",
+      "unite": "100 ml",
+      "produits": [
+        { "nom": "Huile végétale de Sésame", "prix": 2500, "description": "Riche en vitamine E, en acides gras essentiels et en antioxydants, idéale pour les soins anti-âge.", "image": null },
+        { "nom": "Huile végétale d'Olive", "prix": 3500, "description": "Nourrissante, riche en antioxydants, aide à préserver la souplesse et l'élasticité de la peau.", "image": null },
+        { "nom": "Huile végétale de Moringa", "prix": 7000, "description": "Nourrit et revitalise la peau et les cheveux, riche en vitamines et antioxydants, favorise la régénération cutanée.", "image": null },
+        { "nom": "Huile végétale de Tcho Tcho", "prix": 1000, "description": "Nourrit et protège la peau, adoucissante, idéale pour les soins corporels quotidiens.", "image": null },
+        { "nom": "Huile végétale de Curcuma", "prix": 2000, "description": "Purifiante, favorise la régénération de la peau, aide à atténuer les imperfections.", "image": null },
+        { "nom": "Huile végétale d'Ail", "prix": 2500, "description": "Purifiante, fortifie les cheveux, favorise un cuir chevelu sain.", "image": null },
+        { "nom": "Huile végétale de Neem", "prix": 2500, "description": "Purifiante, apaise les peaux à imperfections, aide à protéger la peau et favorise la pousse des cheveux.", "image": null },
+        { "nom": "Huile végétale de Chébé", "prix": 2500, "description": "Fortifie les cheveux, aide à limiter la casse, favorise la longueur et la souplesse.", "image": null },
+        { "nom": "Huile végétale de Souchet", "prix": 2500, "description": "Nourrissante, adoucissante, aide à maintenir une peau souple et satinée.", "image": null },
+        { "nom": "Huile végétale de Coco", "prix": 1000, "description": "Nourrit, protège, lisse et adoucit la peau et les cheveux.", "image": null },
+        { "nom": "Huile végétale de Nigelle", "prix": 2000, "description": "Apaise les peaux irritées, purifiante, favorise le bien-être de la peau.", "image": null },
+        { "nom": "Huile végétale de Chanvre", "prix": 3000, "description": "Adoucissante, revitalisante, nourrit et apaise les peaux sèches et sensibles.", "image": null },
+        { "nom": "Huile végétale de Jojoba", "prix": 3000, "description": "Nourrit les peaux sèches, régule les peaux mixtes à grasses, raffermit les peaux matures.", "image": null },
+        { "nom": "Huile végétale de Ricin", "prix": 3500, "description": "Fortifie les cheveux, les cils et les ongles, favorise leur croissance et leur résistance.", "image": null },
+        { "nom": "Huile végétale de Fenugrec", "prix": 2500, "description": "Raffermissante et fortifiante, favorise le galbe de la poitrine, stimule la pousse des cheveux.", "image": null }
+      ]
+    },
+    {
+      "slug": "poudres",
+      "nom": "Poudres",
+      "unite": null,
+      "produits": [
+        { "nom": "Poudre de Cannelle", "prix": 3000, "description": "Riche en antioxydants, favorise le confort digestif, contribue au maintien d'une bonne glycémie.", "image": null },
+        { "nom": "Poudre de Clou de Girofle", "prix": 3000, "description": "Favorise la digestion, contribue à une bonne hygiène bucco-dentaire, riche en antioxydants.", "image": null },
+        { "nom": "Poudre de Petit Cola", "prix": 3000, "description": "Tonifiante, favorise la vitalité, traditionnellement utilisée pour soutenir la fertilité.", "image": null },
+        { "nom": "Poudre de Graine de Fruit de Noni", "prix": 3000, "description": "Riche en antioxydants, favorise le bien-être général, soutient les défenses naturelles.", "image": null },
+        { "nom": "Poudre de Moringa", "prix": 1500, "description": "Riche en vitamines, minéraux et protéines, contribue au renforcement des muscles et à la vitalité.", "image": null },
+        { "nom": "Poudre de Curcuma", "prix": 1000, "description": "Riche en antioxydants, favorise le confort articulaire, contribue au bien-être digestif.", "image": null },
+        { "nom": "Poudre de Poivre long", "prix": 1000, "description": "Stimule la digestion, favorise la vitalité, contribue au confort respiratoire.", "image": null },
+        { "nom": "Poudre d'Argile verte", "prix": 3000, "description": "Purifie la peau, absorbe l'excès de sébum, idéale pour les soins du visage et des cheveux.", "image": null },
+        { "nom": "Poudre de Néré", "prix": 1000, "description": "Riche en nutriments essentiels, favorise le bien-être nutritionnel, apporte des protéines et des minéraux.", "image": null },
+        { "nom": "Poudre de Caïlcédrat", "prix": 2000, "description": "Traditionnellement utilisée pour favoriser le confort digestif, contribue au bien-être général.", "image": null },
+        { "nom": "Poudre de Cacao", "prix": 3000, "description": "Riche en antioxydants, source de magnésium, protecteur cardiovasculaire, favorise l'énergie et le bien-être.", "image": null },
+        { "nom": "Poudre de Baobab", "prix": 2000, "description": "Riche en vitamine C et en fibres, favorise la digestion et soutient les défenses naturelles.", "image": null },
+        { "nom": "Poudre de Souchet", "prix": 3500, "description": "Riche en fibres et en minéraux, favorise la digestion, apporte de l'énergie et contribue à la satiété.", "image": null }
+      ]
+    },
+    {
+      "slug": "infusions",
+      "nom": "Infusions",
+      "unite": null,
+      "produits": [
+        { "nom": "Infusion Ventre Plat", "prix": 3000, "description": "Favorise la digestion, aide à réduire les ballonnements et la graisse abdominale, procure une sensation de légèreté.", "image": null },
+        { "nom": "Infusion de Curcuma", "prix": 2000, "description": "Anti-inflammatoire, favorise le confort articulaire et le bien-être digestif.", "image": null },
+        { "nom": "Infusion de Clous de Girofle", "prix": 2000, "description": "Favorise la digestion, contribue à une bonne hygiène bucco-dentaire, riche en antioxydants.", "image": null },
+        { "nom": "Infusion de Cannelle", "prix": 1500, "description": "Favorise le confort digestif, aide à maintenir une bonne glycémie, riche en antioxydants.", "image": null },
+        { "nom": "Infusion d'Ortie", "prix": 2000, "description": "Riche en vitamines et minéraux, favorise le drainage naturel de l'organisme et contribue à la vitalité.", "image": null },
+        { "nom": "Infusion de Thé Rouge", "prix": 2000, "description": "Favorise la circulation sanguine, aide à réduire la fatigue liée à l'anémie, riche en antioxydants.", "image": null },
+        { "nom": "Artémisia", "prix": 1000, "description": "Traditionnellement utilisée en soutien contre le paludisme, aide à lutter contre certains parasites, contribue au bien-être général.", "image": null },
+        { "nom": "Infusion de Thym", "prix": 2000, "description": "Favorise le confort respiratoire, contribue au bien-être digestif et soutient les défenses naturelles.", "image": null },
+        { "nom": "Racine de Ginseng", "prix": 1000, "description": "Tonifiante, favorise la vitalité physique et intellectuelle, aide à réduire la fatigue.", "image": null }
+      ]
+    },
+    {
+      "slug": "cosmetiques-reparateurs",
+      "nom": "Cosmétiques réparateurs",
+      "unite": null,
+      "produits": [
+        { "nom": "Beurre de Massage", "prix": 2500, "description": "Idéale en soins anti-inflammatoires, favorise le bien-être musculaire et articulaire.", "image": null },
+        { "nom": "Beurre de Karité", "prix": 2000, "description": "Hydrate intensément, nourrit, protège et répare les peaux sèches et les cheveux.", "image": null },
+        { "nom": "Savon Visage", "prix": 1000, "description": "Nettoie en douceur, purifie la peau, aide à préserver un teint éclatant.", "image": null },
+        { "nom": "Lotion pour le Visage", "prix": 2000, "description": "Hydrate, tonifie et rafraîchit la peau, aide à maintenir un teint uniforme.", "image": null },
+        { "nom": "Beurre de Cacao", "prix": 1500, "description": "Nourrit intensément, améliore l'élasticité de la peau, aide à prévenir le dessèchement.", "image": null },
+        { "nom": "Yeyishampoo", "prix": 2000, "description": "Nettoie les cheveux en profondeur, élimine les pellicules, favorise l'hydratation et la pousse des cheveux.", "image": null },
+        { "nom": "Huile Corporelle", "prix": 4000, "description": "Hydrate, nourrit et adoucit la peau, laisse un toucher soyeux.", "image": null },
+        { "nom": "Poudre Anti-Acné", "prix": 3000, "description": "Purifie la peau, aide à réduire imperfections et acnés.", "image": null },
+        { "nom": "Savon Noir 7 Épices", "prix": 2500, "description": "Nettoie en profondeur, exfolie délicatement, aide à purifier et revitaliser la peau.", "image": null },
+        { "nom": "Savon Kortor", "prix": 2000, "description": "Nettoie la peau en douceur, aide à éliminer les impuretés, favorise une peau propre et fraîche.", "image": null },
+        { "nom": "Huile Boost Hair", "prix": 5000, "description": "Fortifie les cheveux, stimule leur croissance, nourrit le cuir chevelu et aide à l'hydrater.", "image": null }
+      ]
+    }
+  ]
+}
