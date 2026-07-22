@@ -1,0 +1,139 @@
+// prisma/schema.prisma
+// Modèle de données complet du site Vivre Bio.
+// Chaque "model" devient une table dans PostgreSQL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------
+// CATALOGUE
+// ------------------------------
+
+model Category {
+  id        String    @id @default(cuid())
+  slug      String    @unique   // ex: "huiles-essentielles"
+  nom       String              // ex: "Huiles essentielles"
+  unite     String?             // ex: "10 ml" (optionnel)
+  produits  Product[]
+  createdAt DateTime  @default(now())
+}
+
+model Product {
+  id          String         @id @default(cuid())
+  nom         String
+  slug        String         @unique
+  description String
+  prix        Int                    // prix en FCFA (entier, pas de centimes)
+  stock       Int            @default(0)
+  actif       Boolean        @default(true)
+  images      ProductImage[]
+  categoryId  String
+  category    Category       @relation(fields: [categoryId], references: [id])
+  orderItems  OrderItem[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  url       String
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// ------------------------------
+// UTILISATEURS & AUTHENTIFICATION
+// ------------------------------
+
+model User {
+  id        String     @id @default(cuid())
+  nom       String?
+  email     String?    @unique
+  telephone String?    @unique
+  password  String?              // hash bcrypt, null si connexion via Google plus tard
+  role      Role       @default(CLIENT)
+  addresses Address[]
+  orders    Order[]
+  createdAt DateTime   @default(now())
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+}
+
+model Address {
+  id            String   @id @default(cuid())
+  nomComplet    String
+  telephone     String
+  ville         String
+  quartier      String
+  adresseDetail String
+  instructions  String?
+  parDefaut     Boolean  @default(false)
+  userId        String?          // null si commande invité
+  user          User?    @relation(fields: [userId], references: [id])
+  orders        Order[]
+}
+
+// ------------------------------
+// COMMANDES
+// ------------------------------
+
+model Order {
+  id             String      @id @default(cuid())
+  numero         String      @unique   // numéro de commande lisible, ex: VB-2026-0001
+  statut         OrderStatus @default(EN_ATTENTE)
+  total          Int                   // total en FCFA
+  fraisLivraison Int         @default(0)
+
+  // Commande invité : userId peut être null, mais on garde les coordonnées
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [id])
+  nomInvite       String?
+  emailInvite     String?
+  telephoneInvite String?
+
+  addressId String
+  address   Address @relation(fields: [addressId], references: [id])
+
+  modePaiement String                // "mobile_money" | "carte" | "a_la_livraison"
+  items        OrderItem[]
+  payment      Payment?
+  createdAt    DateTime    @default(now())
+}
+
+enum OrderStatus {
+  EN_ATTENTE
+  PAYEE
+  EN_PREPARATION
+  EXPEDIEE
+  LIVREE
+  ANNULEE
+}
+
+model OrderItem {
+  id           String  @id @default(cuid())
+  orderId      String
+  order        Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product @relation(fields: [productId], references: [id])
+  quantite     Int
+  prixUnitaire Int             // prix au moment de la commande (peut différer du prix actuel)
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  orderId   String   @unique
+  order     Order    @relation(fields: [orderId], references: [id])
+  methode   String
+  statut    String            // "en_attente" | "reussi" | "echoue"
+  reference String?           // référence transaction fournie par Kkiapay/FedaPay
+  createdAt DateTime @default(now())
+}
