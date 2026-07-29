@@ -1,10 +1,10 @@
 // src/components/layout/Header.tsx
-// En-tête présent sur toutes les pages : logo, navigation, icônes compte/panier.
-// Server Component qui charge les catégories pour le menu déroulant "Boutique".
+// On remplace l'icône panier statique par le composant CartIcon dynamique.
 
 import Link from "next/link";
-import { Search, User, ShoppingCart } from "lucide-react";
+import { Search, User } from "lucide-react";
 import { getCategories } from "@/lib/produits";
+import { CartIcon } from "@/components/layout/CartIcon";
 
 export async function Header() {
   const categories = await getCategories();
@@ -27,11 +27,10 @@ export async function Header() {
         <div className="flex items-center gap-4 text-vivrebio-vert">
           <Link href="/boutique"><Search size={20} /></Link>
           <Link href="/compte"><User size={20} /></Link>
-          <Link href="/panier"><ShoppingCart size={20} /></Link>
+          <CartIcon />
         </div>
       </div>
 
-      {/* Sous-barre avec les catégories, visible sur la page boutique et l'accueil */}
       <div className="mx-auto flex max-w-6xl gap-4 overflow-x-auto px-4 pb-2 text-xs text-gray-500">
         {categories.map((cat) => (
           <Link

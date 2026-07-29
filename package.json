@@ -9,11 +9,13 @@
     "lint": "eslint"
   },
   "prisma": {
-  "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
+    "@emailjs/nodejs": "^5.0.2",
     "@hookform/resolvers": "^5.4.0",
+    "@kkiapay-org/nodejs-sdk": "^1.0.7",
     "@prisma/client": "^6.15.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",

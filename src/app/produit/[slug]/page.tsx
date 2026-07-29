@@ -1,9 +1,9 @@
 // src/app/produit/[slug]/page.tsx
-// Fiche produit dynamique : une page générée pour chacun des 87 produits, à partir de son slug.
+// Remplace uniquement la section des boutons par le composant AddToCartButton.
 
 import { notFound } from "next/navigation";
 import { ProductImagePlaceholder } from "@/components/ui/ProductImagePlaceholder";
-import { Button } from "@/components/ui/Button";
+import { AddToCartButton } from "@/components/produits/AddToCartButton";
 import { formatPrix } from "@/lib/format";
 import { getProduitBySlug } from "@/lib/produits";
 
@@ -15,7 +15,7 @@ export default async function ProduitPage({
   const { slug } = await params;
   const produit = await getProduitBySlug(slug);
 
-  if (!produit) notFound(); // affiche automatiquement la page 404 de Next.js
+  if (!produit) notFound();
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
@@ -39,14 +39,18 @@ export default async function ProduitPage({
           <p className="mt-4 text-sm leading-relaxed text-gray-600">
             {produit.description}
           </p>
-
           <p className="mt-4 text-xs text-green-700">
             {produit.stock > 0 ? `En stock — ${produit.stock} unités` : "Rupture de stock"}
           </p>
 
-          <div className="mt-6 flex gap-3">
-            <Button disabled={produit.stock <= 0}>Ajouter au panier</Button>
-            <Button variant="outline" disabled={produit.stock <= 0}>Acheter maintenant</Button>
+          <div className="mt-6">
+            <AddToCartButton
+              productId={produit.id}
+              nom={produit.nom}
+              slug={produit.slug}
+              prix={produit.prix}
+              stock={produit.stock}
+            />
           </div>
         </div>
       </div>
