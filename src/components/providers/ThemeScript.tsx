@@ -1,7 +1,8 @@
 // src/components/providers/ThemeScript.tsx
-// Fichier complet : utilise next/script avec strategy="beforeInteractive"
-// (la méthode officiellement recommandée par Next.js pour les scripts anti-flash
-// de thème), au lieu d'un <script> brut qui déclenchait un avertissement React.
+// Fichier complet : ignore désormais prefers-color-scheme (préférences système)
+// tant que le bouton de bascule est masqué dans la navbar — seul un choix explicite
+// via localStorage (impossible sans bouton visible) peut activer le sombre.
+// Garantit un mode clair cohérent partout, peu importe l'appareil qui consulte.
 
 import Script from "next/script";
 
@@ -12,7 +13,7 @@ export function ThemeScript() {
         (function() {
           try {
             var theme = localStorage.getItem('vivrebio-theme');
-            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            if (theme === 'dark') {
               document.documentElement.classList.add('dark');
             }
           } catch (e) {}
