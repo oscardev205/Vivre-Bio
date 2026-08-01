@@ -1,8 +1,8 @@
 // src/components/providers/ThemeScript.tsx
-// Fichier complet : ignore désormais prefers-color-scheme (préférences système)
-// tant que le bouton de bascule est masqué dans la navbar — seul un choix explicite
-// via localStorage (impossible sans bouton visible) peut activer le sombre.
-// Garantit un mode clair cohérent partout, peu importe l'appareil qui consulte.
+// Fichier complet : neutralise activement le mode sombre — supprime la classe
+// "dark" si elle traîne, et efface toute préférence déjà stockée en localStorage
+// depuis les tests précédents. Garantit un mode clair partout, peu importe ce
+// qu'un navigateur avait mémorisé avant qu'on cache le bouton.
 
 import Script from "next/script";
 
@@ -12,10 +12,8 @@ export function ThemeScript() {
       {`
         (function() {
           try {
-            var theme = localStorage.getItem('vivrebio-theme');
-            if (theme === 'dark') {
-              document.documentElement.classList.add('dark');
-            }
+            document.documentElement.classList.remove('dark');
+            localStorage.removeItem('vivrebio-theme');
           } catch (e) {}
         })();
       `}
