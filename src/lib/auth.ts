@@ -1,5 +1,6 @@
 // src/lib/auth.ts
-// Configuration centrale de NextAuth : connexion par e-mail/téléphone + mot de passe.
+// Ajout : le téléphone de l'utilisateur est désormais inclus dans la session,
+// pour pouvoir pré-remplir les formulaires sans jamais le redemander.
 
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -9,10 +10,8 @@ import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" }, // sessions légères, pas besoin de table Session en base
-  pages: {
-    signIn: "/connexion",
-  },
+  session: { strategy: "jwt" },
+  pages: { signIn: "/connexion" },
   providers: [
     CredentialsProvider({
       name: "Identifiants",
@@ -23,27 +22,31 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
-
+        const user = await prisma.user.findUnique({ where: { email: credentials.email } });
         if (!user || !user.password) return null;
 
         const motDePasseValide = await bcrypt.compare(credentials.password, user.password);
         if (!motDePasseValide) return null;
 
-        return { id: user.id, name: user.nom, email: user.email };
+        return { id: user.id, name: user.nom, email: user.email, role: user.role, telephone: user.telephone };
       },
     }),
   ],
   callbacks: {
-    // On ajoute l'id utilisateur dans la session pour pouvoir l'utiliser dans les commandes
     async jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) {
+        token.id = user.id;
+        token.role = (user as unknown as { role: string }).role;
+        token.telephone = (user as unknown as { telephone?: string | null }).telephone;
+      }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) (session.user as { id?: string }).id = token.id as string;
+      if (session.user) {
+        (session.user as { id?: string; role?: string; telephone?: string | null }).id = token.id as string;
+        (session.user as { id?: string; role?: string; telephone?: string | null }).role = token.role as string;
+        (session.user as { id?: string; role?: string; telephone?: string | null }).telephone = token.telephone as string | null;
+      }
       return session;
     },
   },

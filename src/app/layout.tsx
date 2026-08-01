@@ -1,12 +1,16 @@
 // src/app/layout.tsx
-// On ajoute SessionProviderWrapper en plus de CartProvider.
+// Fichier complet : ajout de ThemeScript (dans le <head>) et ThemeProvider
+// (enveloppe l'app), en plus de tout ce qui existait déjà.
 
 import type { Metadata } from "next";
 import { Poppins, Great_Vibes } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/context/CartContext";
+import { ThemeProvider } from "@/context/ThemeContext";
+import { ThemeScript } from "@/components/providers/ThemeScript";
 import { SessionProviderWrapper } from "@/components/providers/SessionProviderWrapper";
+import { SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -22,8 +26,25 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata: Metadata = {
-  title: "Vivre Bio — Le meilleur de la nature pour vous",
-  description: "Produits naturels et bio : huiles essentielles, huiles végétales, poudres, infusions et cosmétiques.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Vivre Bio — Le meilleur de la nature pour vous",
+    template: "%s | Vivre Bio",
+  },
+  description: "Produits naturels et bio : huiles essentielles, huiles végétales, poudres, infusions et cosmétiques. Livraison à Cotonou et partout au Bénin.",
+  openGraph: {
+    siteName: "Vivre Bio",
+    type: "website",
+    locale: "fr_FR",
+    title: "Vivre Bio — Le meilleur de la nature pour vous",
+    description: "Produits naturels et bio : huiles essentielles, huiles végétales, poudres, infusions et cosmétiques.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vivre Bio — Le meilleur de la nature pour vous",
+    description: "Produits naturels et bio, sélectionnés avec exigence.",
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({
@@ -32,15 +53,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
       <body className={`${poppins.variable} ${greatVibes.variable} flex min-h-screen flex-col font-sans antialiased`}>
-        <SessionProviderWrapper>
-          <CartProvider>
-            <Header />
-            <div className="flex-1">{children}</div>
-            <Footer />
-          </CartProvider>
-        </SessionProviderWrapper>
+        <ThemeProvider>
+          <SessionProviderWrapper>
+            <CartProvider>
+              <Header />
+              <div className="flex-1">{children}</div>
+              <Footer />
+            </CartProvider>
+          </SessionProviderWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );

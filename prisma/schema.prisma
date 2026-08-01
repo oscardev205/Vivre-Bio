@@ -1,6 +1,5 @@
 // prisma/schema.prisma
 // Modèle de données complet du site Vivre Bio.
-// Chaque "model" devient une table dans PostgreSQL.
 
 generator client {
   provider = "prisma-client-js"
@@ -17,9 +16,9 @@ datasource db {
 
 model Category {
   id        String    @id @default(cuid())
-  slug      String    @unique   // ex: "huiles-essentielles"
-  nom       String              // ex: "Huiles essentielles"
-  unite     String?             // ex: "10 ml" (optionnel)
+  slug      String    @unique
+  nom       String
+  unite     String?
   produits  Product[]
   createdAt DateTime  @default(now())
 }
@@ -29,15 +28,20 @@ model Product {
   nom         String
   slug        String         @unique
   description String
-  prix        Int                    // prix en FCFA (entier, pas de centimes)
+  prix        Int
   stock       Int            @default(0)
   actif       Boolean        @default(true)
   images      ProductImage[]
   categoryId  String
   category    Category       @relation(fields: [categoryId], references: [id])
   orderItems  OrderItem[]
+  reviews     Review[]
+  likes       ProductLike[]
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
+
+  stockAlerts StockAlert[]
+  seuilAlerte Int?
 }
 
 model ProductImage {
@@ -52,15 +56,21 @@ model ProductImage {
 // ------------------------------
 
 model User {
-  id        String     @id @default(cuid())
-  nom       String?
-  email     String?    @unique
-  telephone String?    @unique
-  password  String?              // hash bcrypt, null si connexion via Google plus tard
-  role      Role       @default(CLIENT)
-  addresses Address[]
-  orders    Order[]
-  createdAt DateTime   @default(now())
+  id           String        @id @default(cuid())
+  nom          String?
+  email        String?       @unique
+  telephone    String?       @unique
+  password     String?
+  role         Role          @default(CLIENT)
+  addresses    Address[]
+  orders       Order[]
+  reviews      Review[]
+  reviewLikes  ReviewLike[]
+  productLikes ProductLike[]
+  createdAt    DateTime      @default(now())
+
+  pointsFidelite     Int                  @default(0)
+  pointsTransactions PointsTransaction[]
 }
 
 enum Role {
@@ -76,8 +86,11 @@ model Address {
   quartier      String
   adresseDetail String
   instructions  String?
+  latitude      Float?
+  longitude     Float?
   parDefaut     Boolean  @default(false)
-  userId        String?          // null si commande invité
+  archivee      Boolean  @default(false)
+  userId        String?
   user          User?    @relation(fields: [userId], references: [id])
   orders        Order[]
 }
@@ -87,26 +100,125 @@ model Address {
 // ------------------------------
 
 model Order {
-  id             String      @id @default(cuid())
-  numero         String      @unique   // numéro de commande lisible, ex: VB-2026-0001
-  statut         OrderStatus @default(EN_ATTENTE)
-  total          Int                   // total en FCFA
-  fraisLivraison Int         @default(0)
+  id             String        @id @default(cuid())
+  numero         String        @unique
+  statut         OrderStatus   @default(EN_ATTENTE)
+  total          Int
+  fraisLivraison Int           @default(0)
+  modeLivraison  ModeLivraison @default(LIVRAISON)
 
-  // Commande invité : userId peut être null, mais on garde les coordonnées
   userId          String?
   user            User?       @relation(fields: [userId], references: [id])
   nomInvite       String?
   emailInvite     String?
   telephoneInvite String?
 
-  addressId String
-  address   Address @relation(fields: [addressId], references: [id])
+  // Optionnelle : absente pour un retrait en boutique
+  addressId String?
+  address   Address? @relation(fields: [addressId], references: [id])
 
-  modePaiement String                // "mobile_money" | "carte" | "a_la_livraison"
+  // Utilisés uniquement en mode retrait (client connecté ou invité)
+  contactNom       String?
+  contactTelephone String?
+
+  modePaiement String
   items        OrderItem[]
   payment      Payment?
-  createdAt    DateTime    @default(now())
+  messages     Message[]
+
+  promoCodeId      String?
+  promoCode        PromoCode? @relation(fields: [promoCodeId], references: [id])
+  montantReduction Int        @default(0)
+
+  livraisonConfirmee   Boolean   @default(false)
+  livraisonConfirmeeAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  pointsUtilises Int @default(0)
+  pointsGagnes   Int @default(0)
+
+  reductionPoints Int @default(0)
+}
+
+// prisma/schema.prisma
+// Ajout : Parametre (réglages généraux clé/valeur, réutilisable pour d'autres
+// options futures), et reductionPoints sur Order (montant en FCFA de la
+// réduction points, séparé de montantReduction qui reste dédié aux codes promo).
+
+model Parametre {
+  id     String @id @default(cuid())
+  cle    String @unique
+  valeur String
+}
+
+// prisma/schema.prisma
+// Ajout : Post pour le blog. Le contenu est stocké en texte simple (chaque
+// paragraphe séparé par une ligne vide) plutôt qu'en HTML riche — plus simple,
+// plus sûr (pas de risque d'injection), largement suffisant pour des articles.
+
+model Post {
+  id        String   @id @default(cuid())
+  titre     String
+  slug      String   @unique
+  extrait   String
+  contenu   String
+  publie    Boolean  @default(false)
+  auteur    String   @default("Vivre Bio")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// prisma/schema.prisma
+// Ajout : FaqItem pour les questions fréquentes, avec un ordre d'affichage
+// personnalisable (l'admin peut réordonner les questions les plus importantes
+// en premier).
+
+model FaqItem {
+  id        String   @id @default(cuid())
+  question  String
+  reponse   String
+  ordre     Int      @default(0)
+  publie    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+
+// Ajout : DeliveryZone (frais par ville), StockAlert (alerte disponibilité),
+// et un champ seuilAlerte sur Product (notification admin si stock bas).
+
+model DeliveryZone {
+  id          String   @id @default(cuid())
+  ville       String   @unique
+  frais       Int
+  delaiEstime String?
+  actif       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+// prisma/schema.prisma
+// Ajout : solde de points sur User, historique des transactions (gain/utilisation),
+// et deux champs sur Order pour tracer combien de points ont été gagnés/utilisés
+// par commande (transparence et debug facilités).
+
+model PointsTransaction {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  montant   Int      // positif = gain, négatif = utilisation
+  motif     String
+  createdAt DateTime @default(now())
+}
+
+model StockAlert {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  email     String
+  notifie   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([productId, email])
 }
 
 enum OrderStatus {
@@ -117,6 +229,31 @@ enum OrderStatus {
   LIVREE
   ANNULEE
 }
+// prisma/schema.prisma
+// Ajouts : mode de livraison (LIVRAISON/RETRAIT) sur Order, adresse désormais
+// optionnelle (pas besoin d'adresse pour un retrait en boutique), contact direct
+// pour le retrait, et DeliveryRequest pour les demandes de nouvelle zone.
+
+enum ModeLivraison {
+  LIVRAISON
+  RETRAIT
+}
+
+enum DemandeLivraisonStatut {
+  EN_ATTENTE
+  APPROUVEE
+  REFUSEE
+}
+
+model DeliveryRequest {
+  id        String                  @id @default(cuid())
+  ville     String
+  nom       String
+  telephone String
+  email     String?
+  statut    DemandeLivraisonStatut  @default(EN_ATTENTE)
+  createdAt DateTime                @default(now())
+}
 
 model OrderItem {
   id           String  @id @default(cuid())
@@ -125,7 +262,7 @@ model OrderItem {
   productId    String
   product      Product @relation(fields: [productId], references: [id])
   quantite     Int
-  prixUnitaire Int             // prix au moment de la commande (peut différer du prix actuel)
+  prixUnitaire Int
 }
 
 model Payment {
@@ -133,7 +270,95 @@ model Payment {
   orderId   String   @unique
   order     Order    @relation(fields: [orderId], references: [id])
   methode   String
-  statut    String            // "en_attente" | "reussi" | "echoue"
-  reference String?           // référence transaction fournie par Kkiapay/FedaPay
+  statut    String
+  reference String?
   createdAt DateTime @default(now())
+}
+
+// ------------------------------
+// MESSAGERIE (par commande)
+// ------------------------------
+
+enum MessageAuteur {
+  CLIENT
+  ADMIN
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  orderId   String
+  order     Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  auteur    MessageAuteur
+  contenu   String
+  lu        Boolean       @default(false)
+  createdAt DateTime      @default(now())
+}
+
+// ------------------------------
+// AVIS PRODUITS & LIKES
+// ------------------------------
+
+model Review {
+  id          String       @id @default(cuid())
+  productId   String
+  product     Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User         @relation(fields: [userId], references: [id])
+  note        Int
+  commentaire String
+  likes       ReviewLike[]
+  createdAt   DateTime     @default(now())
+}
+
+model ReviewLike {
+  id        String   @id @default(cuid())
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([reviewId, userId])
+}
+
+// prisma/schema.prisma
+// Ajout : PromoCode (codes de réduction), et champs liés sur Order pour tracer
+// quelle réduction a été appliquée à quelle commande.
+
+enum PromoType {
+  POURCENTAGE
+  MONTANT_FIXE
+}
+
+model PromoCode {
+  id                 String    @id @default(cuid())
+  code               String    @unique
+  type               PromoType
+  valeur             Int       // pourcentage (1-100) si POURCENTAGE, sinon montant FCFA
+  actif              Boolean   @default(true)
+  dateExpiration     DateTime?
+  utilisationMax     Int?      // null = illimité
+  nombreUtilisations Int       @default(0)
+  montantMinimum     Int?      // commande minimum requise pour l'appliquer
+  orders             Order[]
+  createdAt          DateTime  @default(now())
+}
+
+// Nouveau modèle : abonnés à la newsletter.
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model ProductLike {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([productId, userId])
 }

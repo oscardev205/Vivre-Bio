@@ -1,6 +1,6 @@
 // src/app/compte/adresses/page.tsx
-// Correction : chargerAdresses passe par useCallback pour éviter le warning
-// de re-render en cascade signalé par l'éditeur (non bloquant, mais plus propre).
+// Ajout : message clair après suppression/archivage, et gestion d'erreur visible
+// (au lieu d'un échec silencieux).
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -13,6 +13,7 @@ export default function AdressesPage() {
   const [adresses, setAdresses] = useState<Adresse[]>([]);
   const [afficherFormulaire, setAfficherFormulaire] = useState(false);
   const [chargement, setChargement] = useState(false);
+  const [message, setMessage] = useState("");
 
   const chargerAdresses = useCallback(async () => {
     const res = await fetch("/api/adresses");
@@ -42,14 +43,27 @@ export default function AdressesPage() {
   }
 
   async function supprimer(id: string) {
-    await fetch(`/api/adresses/${id}`, { method: "DELETE" });
+    const res = await fetch(`/api/adresses/${id}`, { method: "DELETE" });
+    const data = await res.json();
+
+    if (res.ok) {
+      setMessage(
+        data.archivee
+          ? "Cette adresse est utilisée dans une commande passée — elle a été retirée de votre liste mais reste liée à l'historique de cette commande."
+          : "Adresse supprimée."
+      );
+    } else {
+      setMessage(data.erreur || "Une erreur est survenue.");
+    }
+
+    setTimeout(() => setMessage(""), 5000);
     await chargerAdresses();
   }
 
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm font-medium">Adresses enregistrées</p>
+        <p className="text-sm font-medium text-encre">Adresses enregistrées</p>
         <button
           onClick={() => setAfficherFormulaire((v) => !v)}
           className="text-xs text-vivrebio-vert hover:underline"
@@ -58,25 +72,29 @@ export default function AdressesPage() {
         </button>
       </div>
 
+      {message && (
+        <p className="mb-4 rounded-lg bg-vert-pale px-3 py-2 text-xs text-encre">{message}</p>
+      )}
+
       {afficherFormulaire && (
-        <div className="mb-6 rounded-xl border border-gray-100 p-4">
-          <AddressForm onSubmit={handleAjout} chargement={chargement} />
+        <div className="mb-6">
+          <AddressForm onSubmit={handleAjout} chargement={chargement} libelleBouton="Enregistrer cette adresse" />
         </div>
       )}
 
       <div className="grid gap-3 sm:grid-cols-2">
         {adresses.map((adresse) => (
-          <div key={adresse.id} className="rounded-xl border border-gray-100 p-4">
+          <div key={adresse.id} className="carte-3d p-4">
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-sm font-medium">{adresse.nomComplet}</p>
+              <p className="text-sm font-medium text-encre">{adresse.nomComplet}</p>
               {adresse.parDefaut && (
                 <span className="flex items-center gap-1 text-xs text-vivrebio-vert">
                   <Star size={12} fill="currentColor" /> Par défaut
                 </span>
               )}
             </div>
-            <p className="text-xs text-gray-500">{adresse.adresseDetail}, {adresse.quartier}</p>
-            <p className="text-xs text-gray-500">{adresse.ville} · {adresse.telephone}</p>
+            <p className="text-xs text-encre/50">{adresse.adresseDetail}, {adresse.quartier}</p>
+            <p className="text-xs text-encre/50">{adresse.ville} · {adresse.telephone}</p>
 
             <div className="mt-3 flex gap-3 text-xs">
               {!adresse.parDefaut && (
@@ -93,7 +111,7 @@ export default function AdressesPage() {
       </div>
 
       {adresses.length === 0 && !afficherFormulaire && (
-        <p className="text-sm text-gray-400">Aucune adresse enregistrée pour l&apos;instant.</p>
+        <p className="text-sm text-encre/40">Aucune adresse enregistrée pour l&apos;instant.</p>
       )}
     </div>
   );

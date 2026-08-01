@@ -1,35 +1,44 @@
 // src/app/compte/layout.tsx
-// Layout partagé par toutes les pages de l'espace client : navigation latérale
-// (tableau de bord, commandes, adresses) + bouton de déconnexion.
+// Fichier complet : la nav passe en défilement horizontal propre sur mobile
+// (au lieu de wrap désordonné ou débordement), verticale en colonne sur desktop.
 
 import Link from "next/link";
-import { LayoutDashboard, Package, MapPin } from "lucide-react";
+import { LayoutDashboard, Package, MapPin, Settings, Heart, Gift } from "lucide-react";
 import { DeconnexionButton } from "@/components/compte/DeconnexionButton";
 
 export default function CompteLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="mb-6 text-xl font-semibold text-vivrebio-vert">Mon espace client</h1>
+    <main className="mx-auto max-w-5xl px-4 py-6 sm:py-8">
+      <h1 className="mb-4 text-lg font-semibold text-vivrebio-vert sm:mb-6 sm:text-xl">Mon espace client</h1>
 
-      <div className="flex flex-col gap-8 md:flex-row">
+      <div className="flex flex-col gap-6 md:flex-row md:gap-8">
         <aside className="w-full shrink-0 md:w-48">
-          <nav className="flex flex-row gap-4 text-sm md:flex-col md:gap-1">
-            <Link href="/compte" className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-green-50">
+          <nav className="flex gap-2 overflow-x-auto pb-2 text-sm md:flex-col md:gap-1 md:overflow-visible md:pb-0">
+            <Link href="/compte" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
               <LayoutDashboard size={16} /> Tableau de bord
             </Link>
-            <Link href="/compte/commandes" className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-green-50">
+            <Link href="/compte/commandes" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
               <Package size={16} /> Mes commandes
             </Link>
-            <Link href="/compte/adresses" className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-green-50">
+            <Link href="/compte/adresses" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
               <MapPin size={16} /> Mes adresses
             </Link>
+            <Link href="/compte/favoris" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
+              <Heart size={16} /> Mes favoris
+            </Link>
+            <Link href="/compte/fidelite" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
+              <Gift size={16} /> Mes points
+            </Link>
+            <Link href="/compte/parametres" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
+              <Settings size={16} /> Paramètres
+            </Link>
           </nav>
-          <div className="mt-4 border-t border-gray-100 pt-4">
+          <div className="mt-4 border-t border-sable pt-4">
             <DeconnexionButton />
           </div>
         </aside>
 
-        <section className="flex-1">{children}</section>
+        <section className="min-w-0 flex-1">{children}</section>
       </div>
     </main>
   );

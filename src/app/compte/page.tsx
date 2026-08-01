@@ -1,8 +1,10 @@
 // src/app/compte/page.tsx
-// Tableau de bord : message de bienvenue + résumé de la dernière commande.
+// Ajout : si l'utilisateur est admin, un raccourci vers le back-office apparaît
+// en haut du tableau de bord client.
 
 import { getServerSession } from "next-auth";
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatPrix } from "@/lib/format";
@@ -10,6 +12,7 @@ import { formatPrix } from "@/lib/format";
 export default async function TableauDeBordPage() {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id: string }).id;
+  const estAdmin = (session?.user as { role?: string })?.role === "ADMIN";
 
   const derniereCommande = await prisma.order.findFirst({
     where: { userId },
@@ -21,6 +24,15 @@ export default async function TableauDeBordPage() {
 
   return (
     <div>
+      {estAdmin && (
+        <Link
+          href="/admin"
+          className="mb-4 flex items-center gap-2 rounded-lg bg-vivrebio-rouge/10 px-4 py-2.5 text-sm font-medium text-vivrebio-rouge"
+        >
+          <ShieldCheck size={16} /> Accéder au back-office admin →
+        </Link>
+      )}
+
       <p className="mb-6 text-sm text-gray-600">
         Bonjour <strong>{session?.user?.name || session?.user?.email}</strong>, ravi de vous revoir.
       </p>

@@ -52,3 +52,29 @@ export async function getProduitsPhares(limite = 3) {
     take: limite,
   });
 }
+
+// Ajout : récupère les avis les mieux notés récents, tous produits confondus,
+// pour la section témoignages de l'accueil.
+
+export async function getAvisRecents(limite = 4) {
+  return prisma.review.findMany({
+    where: { note: { gte: 4 } },
+    include: {
+      user: { select: { nom: true } },
+      product: { select: { nom: true, slug: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limite,
+  });
+}
+
+// src/lib/produits.ts
+// Ajout : produits de la même catégorie, hors le produit courant.
+
+export async function getProduitsSimilaires(productId: string, categoryId: string, limite = 4) {
+  return prisma.product.findMany({
+    where: { categoryId, id: { not: productId }, actif: true },
+    include: { category: true, images: true },
+    take: limite,
+  });
+}

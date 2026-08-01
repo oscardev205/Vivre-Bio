@@ -1,9 +1,27 @@
 // src/middleware.ts
-// Protège automatiquement toutes les routes /compte/* : redirige vers /connexion
-// si l'utilisateur n'est pas authentifié. S'exécute avant le rendu de la page.
+// Protège /compte/* (tout utilisateur connecté) et /admin/* (uniquement rôle ADMIN).
+// Un client connecté qui tente d'accéder à /admin est renvoyé vers l'accueil.
 
-export { default } from "next-auth/middleware";
+import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
+
+export default withAuth(
+  function middleware(req) {
+    const { pathname } = req.nextUrl;
+    const role = (req.nextauth.token as { role?: string } | null)?.role;
+
+    if (pathname.startsWith("/admin") && role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token,
+    },
+    pages: { signIn: "/connexion" },
+  }
+);
 
 export const config = {
-  matcher: ["/compte/:path*"],
+  matcher: ["/compte/:path*", "/admin/:path*"],
 };

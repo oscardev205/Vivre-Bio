@@ -1,5 +1,6 @@
 // src/components/ui/Badge.tsx
-// Petite étiquette colorée (utilisée pour "Nouveau", "Rupture de stock", etc.)
+// Ajustement : le variant "gris" utilise désormais un ton sable/encre au lieu
+// d'un gris générique, pour rester dans la palette de marque.
 
 import clsx from "clsx";
 
@@ -12,10 +13,10 @@ export function Badge({ children, variant = "rouge" }: BadgeProps) {
   return (
     <span
       className={clsx(
-        "inline-block rounded-full px-2.5 py-0.5 text-xs font-medium text-white",
-        variant === "rouge" && "bg-vivrebio-rouge",
-        variant === "gris" && "bg-gray-400",
-        variant === "vert" && "bg-vivrebio-vert"
+        "inline-block rounded-full px-2.5 py-0.5 text-xs font-medium",
+        variant === "rouge" && "bg-vivrebio-rouge text-white",
+        variant === "gris" && "bg-encre/10 text-encre",
+        variant === "vert" && "bg-vivrebio-vert text-white"
       )}
     >
       {children}

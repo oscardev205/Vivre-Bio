@@ -1,6 +1,7 @@
 // src/components/commande/BoutonPaiementKkiapay.tsx
-// Ajout d'un verrou (useRef) pour n'envoyer l'appel de vérification qu'une seule fois,
-// même si l'écouteur Kkiapay se déclenche plusieurs fois côté navigateur.
+// Fichier complet : sandbox lu depuis une variable d'environnement au lieu
+// d'être figé à true — permet de rester en test en local et de basculer en
+// réel une fois en production, sans toucher au code.
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -25,10 +26,12 @@ declare global {
 type Props = { numero: string; montant: number };
 type EtatScript = "chargement" | "pret" | "erreur";
 
+const SANDBOX = process.env.NEXT_PUBLIC_KKIAPAY_SANDBOX !== "false";
+
 export function BoutonPaiementKkiapay({ numero, montant }: Props) {
   const router = useRouter();
   const [etat, setEtat] = useState<EtatScript>("chargement");
-  const dejaEnvoye = useRef(false); // verrou anti-doublon
+  const dejaEnvoye = useRef(false);
 
   useEffect(() => {
     const delai = setTimeout(() => {
@@ -39,7 +42,7 @@ export function BoutonPaiementKkiapay({ numero, montant }: Props) {
 
   useEffect(() => {
     function handleSuccess(response: { transactionId: string }) {
-      if (dejaEnvoye.current) return; // ignore les déclenchements en double
+      if (dejaEnvoye.current) return;
       dejaEnvoye.current = true;
 
       fetch("/api/paiement/verifier", {
@@ -62,7 +65,7 @@ export function BoutonPaiementKkiapay({ numero, montant }: Props) {
     window.openKkiapayWidget({
       amount: montant,
       key: process.env.NEXT_PUBLIC_KKIAPAY_PUBLIC_KEY!,
-      sandbox: true,
+      sandbox: SANDBOX,
       data: numero,
       position: "center",
     });

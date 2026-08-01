@@ -1,31 +1,199 @@
-/* src/app/globals.css */
-/* En Tailwind v4, les couleurs et polices se déclarent ici (pas de tailwind.config.ts). */
+/* src/app/globals.css
+   Fond repensé : vrai mélange vert/rouge/blanc en dégradés multiples qui se fondent
+   ("mesh gradient"), bien plus présent que la version précédente, tout en gardant
+   le texte parfaitement lisible par-dessus. */
 
+@import "leaflet/dist/leaflet.css";
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1b2a1f;
 
-  /* Couleurs officielles Vivre Bio (voir charte graphique) */
-  --color-vivrebio-rouge: #e31e24;       /* Pantone 485 C - rouge principal */
-  --color-vivrebio-vert: #2e7d32;        /* Pantone 362 C - vert principal */
-  --color-vivrebio-vert-clair: #7cb342;  /* Pantone 368 C - vert secondaire */
+  --color-vivrebio-rouge: #e31e24;
+  --color-vivrebio-vert: #2e7d32;
+  --color-vivrebio-vert-clair: #7cb342;
+
+  --color-encre: #1b2a1f;
+  --color-papier: #faf8f2;
+  --color-vert-pale: #eaf3de;
+  --color-sable: #ede7d9;
+  --color-sable-fonce: #cfc6ae;
+   --color-footer-bg: #1b2a1f;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-
   --color-vivrebio-rouge: var(--color-vivrebio-rouge);
   --color-vivrebio-vert: var(--color-vivrebio-vert);
   --color-vivrebio-vert-clair: var(--color-vivrebio-vert-clair);
-
+  --color-encre: var(--color-encre);
+  --color-papier: var(--color-papier);
+  --color-vert-pale: var(--color-vert-pale);
+  --color-sable: var(--color-sable);
+  --color-sable-fonce: var(--color-sable-fonce);
   --font-sans: var(--font-poppins);
   --font-accent: var(--font-great-vibes);
+  --color-footer-bg: var(--color-footer-bg);
 }
 
+/* src/app/globals.css
+   Ajustement : opacités réduites d'environ moitié par rapport à la version précédente,
+   pour un fond présent mais plus discret — le mélange reste visible sans dominer. */
+
+/* src/app/globals.css
+   Ajustement : vert et rouge dominants, le blanc n'est plus qu'un respirant entre
+   les taches de couleur plutôt que la couleur de fond principale. */
+
 body {
-  background: var(--background);
   color: var(--foreground);
+  background-color: #fdfcf8;
+  background-image:
+    radial-gradient(ellipse 900px 750px at 5% 0%, rgba(124, 179, 66, 0.42), transparent 60%),
+    radial-gradient(ellipse 750px 650px at 98% 5%, rgba(227, 30, 36, 0.24), transparent 55%),
+    radial-gradient(ellipse 850px 750px at 100% 100%, rgba(46, 125, 50, 0.38), transparent 60%),
+    radial-gradient(ellipse 700px 550px at 0% 98%, rgba(227, 30, 36, 0.20), transparent 55%),
+    radial-gradient(ellipse 650px 550px at 55% 45%, rgba(124, 179, 66, 0.16), transparent 55%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+.trait-feuille {
+  display: inline-block;
+  width: 56px;
+  height: 10px;
+}
+
+@keyframes apparition {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.anim-apparition {
+  animation: apparition 0.6s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-apparition {
+    animation: none;
+  }
+}
+
+/* src/app/globals.css
+   Ajout : classe .carte-3d pour un effet de carte flottante (plusieurs couches
+   d'ombre superposées, bien plus de profondeur qu'un simple border+shadow plat).
+   Ajout aussi d'un style de focus universel sur tous les champs de formulaire
+   (halo vert doux), sans avoir à toucher chaque input individuellement. */
+
+@layer base {
+  input,
+  textarea,
+  select {
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  }
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: var(--color-vivrebio-vert);
+    box-shadow: 0 0 0 3.5px rgba(46, 125, 50, 0.14);
+  }
+}
+
+.carte-3d {
+  background: #ffffff;
+  border-radius: 22px;
+  border: 1px solid rgba(237, 231, 217, 0.7);
+  box-shadow:
+    0 1px 1px rgba(27, 42, 31, 0.03),
+    0 4px 8px rgba(27, 42, 31, 0.05),
+    0 14px 28px rgba(27, 42, 31, 0.08),
+    0 28px 56px -12px rgba(46, 125, 50, 0.10);
+  position: relative;
+}
+
+/* Fin liseré clair en haut, façon reflet — renforce l'effet "posé" plutôt que "collé" */
+.carte-3d::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  border-radius: 999px;
+}
+
+/* Variante légèrement plus marquée, pour les cartes qu'on veut mettre en avant
+   (formulaires de connexion/inscription, tunnel de commande) */
+.carte-3d-forte {
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid rgba(237, 231, 217, 0.7);
+  box-shadow:
+    0 2px 2px rgba(27, 42, 31, 0.04),
+    0 8px 16px rgba(27, 42, 31, 0.07),
+    0 24px 48px rgba(27, 42, 31, 0.10),
+    0 40px 80px -16px rgba(227, 30, 36, 0.08),
+    0 40px 80px -16px rgba(46, 125, 50, 0.12);
+}
+
+/* src/app/globals.css
+   Ajout : variante sombre de toutes les couleurs, activée via la classe .dark
+   sur <html>. Le vert et le rouge de marque restent identiques (identité visuelle
+   préservée), seuls le fond et le texte s'inversent. */
+
+/* src/app/globals.css
+   Ajout : versions éclaircies du rouge et du vert, utilisées uniquement en
+   mode sombre — les couleurs d'origine restent inchangées en mode clair. */
+
+.dark {
+  --background: #14201a;
+  --foreground: #f3f1ea;
+
+  --color-encre: #f3f1ea;
+  --color-papier: #14201a;
+  --color-vert-pale: #1e3324;
+  --color-sable: #2a3830;
+  --color-sable-fonce: #3d4d43;
+
+  /* Versions plus vives, lisibles sur fond sombre (le vert/rouge d'origine
+     étaient calibrés pour un fond clair et perdent leur punch en sombre) */
+  --color-vivrebio-rouge: #ff5257;
+  --color-vivrebio-vert: #4ade68;
+  --color-vivrebio-vert-clair: #9fd968;
+}
+
+.dark body {
+  background-color: #0f1813;
+  background-image:
+    radial-gradient(ellipse 900px 750px at 5% 0%, rgba(124, 179, 66, 0.24), transparent 60%),
+    radial-gradient(ellipse 750px 650px at 98% 5%, rgba(255, 82, 87, 0.16), transparent 55%),
+    radial-gradient(ellipse 850px 750px at 100% 100%, rgba(74, 222, 104, 0.20), transparent 60%),
+    radial-gradient(ellipse 700px 550px at 0% 98%, rgba(255, 82, 87, 0.14), transparent 55%),
+    radial-gradient(ellipse 650px 550px at 55% 45%, rgba(124, 179, 66, 0.10), transparent 55%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+.dark .carte-3d,
+.dark .carte-3d-forte {
+  background: #1c2921;
+  border-color: rgba(61, 77, 67, 0.5);
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.25),
+    0 14px 28px rgba(0, 0, 0, 0.3);
+}
+
+.dark .carte-3d::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
 }

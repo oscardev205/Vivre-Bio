@@ -1,15 +1,172 @@
 // src/components/layout/Footer.tsx
-// Pied de page présent sur toutes les pages.
+// Fichier complet : bg-encre remplacé par bg-footer-bg (couleur fixe, ne bascule
+// jamais avec le thème — le footer reste volontairement sombre dans les deux modes).
+
+import Link from "next/link";
+import { FaFacebook, FaInstagram, FaTiktok } from "react-icons/fa6";
+import { NewsletterForm } from "@/components/layout/NewsletterForm";
 
 export function Footer() {
   return (
-    <footer className="mt-16 bg-vivrebio-vert py-8 text-white">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 text-sm md:flex-row">
-        <span>Vivre Bio — Le meilleur de la nature pour vous</span>
-        <div className="flex gap-4">
-          <a href="/contact" className="hover:underline">Contact</a>
-          <a href="/faq" className="hover:underline">FAQ</a>
-          <a href="/livraison" className="hover:underline">Livraison</a>
+    <footer className="mt-20 bg-footer-bg text-white">
+      <div className="mx-auto max-w-6xl px-4 py-12">
+        <div className="grid gap-10 md:grid-cols-4">
+          {/* Marque */}
+          <div>
+            <p className="text-lg font-bold">
+              <span className="text-vivrebio-rouge">V</span>ivre Bio
+            </p>
+
+            <p className="mt-2 text-sm text-white/60">
+              Le meilleur de la nature pour vous.
+            </p>
+
+            <div className="mt-4 flex gap-3">
+              <a
+                href="https://facebook.com/vivrebio"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Vivre Bio sur Facebook"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 transition hover:bg-vivrebio-vert"
+              >
+                <FaFacebook size={16} />
+              </a>
+
+              <a
+                href="https://instagram.com/vivrebio"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Vivre Bio sur Instagram"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 transition hover:bg-vivrebio-vert"
+              >
+                <FaInstagram size={16} />
+              </a>
+
+              <a
+                href="https://tiktok.com/@vivrebio"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Vivre Bio sur TikTok"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 transition hover:bg-vivrebio-vert"
+              >
+                <FaTiktok size={16} />
+              </a>
+            </div>
+          </div>
+
+          {/* Boutique */}
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/50">
+              Boutique
+            </p>
+
+            <ul className="space-y-2 text-sm text-white/70">
+              <li>
+                <Link href="/boutique" className="hover:text-white">
+                  Tous les produits
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/boutique?categorie=huiles-essentielles"
+                  className="hover:text-white"
+                >
+                  Huiles essentielles
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/boutique?categorie=huiles-vegetales"
+                  className="hover:text-white"
+                >
+                  Huiles végétales
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/boutique?categorie=infusions"
+                  className="hover:text-white"
+                >
+                  Infusions
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Informations */}
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/50">
+              Informations
+            </p>
+
+            <ul className="space-y-2 text-sm text-white/70">
+              <li>
+                <Link href="/faq" className="hover:text-white">
+                  FAQ
+                </Link>
+              </li>
+
+              <li>
+                <Link href="/livraison" className="hover:text-white">
+                  Livraison
+                </Link>
+              </li>
+
+              <li>
+                <Link href="/cgv" className="hover:text-white">
+                  Conditions générales de vente
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/politique-de-confidentialite"
+                  className="hover:text-white"
+                >
+                  Politique de confidentialité
+                </Link>
+              </li>
+
+              <li>
+                <Link href="/blog" className="hover:text-white">
+                  Blog
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/50">
+              Restons en contact
+            </p>
+
+            <p className="mb-3 text-sm text-white/60">
+              Recevez nos nouveautés et offres.
+            </p>
+
+            <NewsletterForm />
+
+            <p className="mt-2 text-[11px] text-white/40">
+              <a
+                href="/desabonnement"
+                className="hover:underline"
+              >
+                Se désabonner
+              </a>
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/40 md:flex-row">
+          <span>
+            © {new Date().getFullYear()} Vivre Bio. Tous droits réservés.
+          </span>
+
+          <span>Cotonou, Bénin</span>
         </div>
       </div>
     </footer>

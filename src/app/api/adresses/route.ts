@@ -1,5 +1,5 @@
 // src/app/api/adresses/route.ts
-// GET : liste les adresses de l'utilisateur connecté. POST : en crée une nouvelle.
+// GET : exclut désormais les adresses archivées de la liste affichée au client.
 
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
@@ -12,7 +12,7 @@ export async function GET() {
 
   const userId = (session.user as { id: string }).id;
   const adresses = await prisma.address.findMany({
-    where: { userId },
+    where: { userId, archivee: false },
     orderBy: { parDefaut: "desc" },
   });
 
@@ -26,8 +26,7 @@ export async function POST(request: Request) {
   const userId = (session.user as { id: string }).id;
   const body = await request.json();
 
-  // Si c'est la première adresse de l'utilisateur, elle devient automatiquement celle par défaut
-  const nombreExistant = await prisma.address.count({ where: { userId } });
+  const nombreExistant = await prisma.address.count({ where: { userId, archivee: false } });
 
   const adresse = await prisma.address.create({
     data: { ...body, userId, parDefaut: nombreExistant === 0 },
