@@ -1,6 +1,7 @@
 // src/components/commande/AddressMapPicker.tsx
-// Ajout : adresseCourte transmise via onSelect (dérivée aussi côté recherche,
-// pas seulement au glisser du repère).
+// Fichier complet : ajout de min-w-0 sur le conteneur racine et overflow-hidden
+// explicite sur la carte Leaflet, pour l'empêcher de déborder de son cadre sur
+// mobile (cause probable du décalage horizontal observé sur toute la page).
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -69,6 +70,10 @@ export function AddressMapPicker({ onSelect }: Props) {
 
       mapRef.current = map;
       markerRef.current = marker;
+
+      // Force Leaflet à recalculer sa propre taille après le premier rendu —
+      // évite qu'il se dessine avec une largeur incorrecte sur mobile.
+      setTimeout(() => map.invalidateSize(), 100);
     })();
 
     return () => {
@@ -193,8 +198,8 @@ export function AddressMapPicker({ onSelect }: Props) {
   }
 
   return (
-    <div>
-      <div className="mb-2 flex gap-2">
+    <div className="min-w-0 w-full">
+      <div className="mb-2 flex min-w-0 gap-2">
         <input
           value={recherche}
           onChange={(e) => setRecherche(e.target.value)}
@@ -205,13 +210,13 @@ export function AddressMapPicker({ onSelect }: Props) {
             }
           }}
           placeholder="Rechercher une adresse ou un quartier"
-          className="flex-1 rounded-lg border border-sable px-3 py-2 text-sm"
+          className="min-w-0 flex-1 rounded-lg border border-sable px-3 py-2 text-sm"
         />
         <button
           type="button"
           onClick={lancerRecherche}
           disabled={chargement}
-          className="rounded-lg bg-vivrebio-vert px-4 text-sm font-medium text-white"
+          className="shrink-0 rounded-lg bg-vivrebio-vert px-4 text-sm font-medium text-white"
         >
           {chargement ? "..." : "Rechercher"}
         </button>
@@ -248,7 +253,11 @@ export function AddressMapPicker({ onSelect }: Props) {
 
       {erreur && <p className="mb-2 text-xs text-vivrebio-rouge">{erreur}</p>}
 
-      <div ref={mapDivRef} className="h-56 w-full rounded-xl border border-sable" />
+      <div
+        ref={mapDivRef}
+        className="h-56 w-full min-w-0 overflow-hidden rounded-xl border border-sable"
+        style={{ maxWidth: "100%" }}
+      />
 
       <p className="mt-1.5 text-xs text-encre/40">
         Recherchez une adresse, utilisez votre position actuelle, ou déplacez le repère vert.
