@@ -1,11 +1,18 @@
 // src/app/api/promo/valider/route.ts
-// Vérifie qu'un code promo est utilisable pour un sous-total donné, et calcule
-// le montant de réduction — appelé depuis le panier ET revérifié à la commande.
+// Fichier complet : limite de 20 essais de code promo par IP toutes les 15 minutes
+// (empêche de tester des centaines de codes à la chaîne).
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifierLimiteDebit, getIpClient } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
+  const ip = getIpClient(request);
+  const autorise = await verifierLimiteDebit(`promo:${ip}`, 20, 15);
+  if (!autorise) {
+    return NextResponse.json({ erreur: "Trop de tentatives. Réessayez plus tard." }, { status: 429 });
+  }
+
   const { code, sousTotal } = await request.json();
 
   if (!code) {
@@ -33,7 +40,7 @@ export async function POST(request: Request) {
   const reduction =
     promo.type === "POURCENTAGE"
       ? Math.round((sousTotal * promo.valeur) / 100)
-      : Math.min(promo.valeur, sousTotal); // jamais plus que le sous-total lui-même
+      : Math.min(promo.valeur, sousTotal);
 
   return NextResponse.json({
     code: promo.code,

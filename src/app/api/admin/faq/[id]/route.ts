@@ -1,4 +1,6 @@
 // src/app/api/admin/faq/[id]/route.ts
+// Fichier complet : whitelist des champs modifiables.
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin";
@@ -12,7 +14,14 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await request.json();
-  const item = await prisma.faqItem.update({ where: { id }, data: body });
+
+  const donnees: Record<string, unknown> = {};
+  if (typeof body.question === "string") donnees.question = body.question;
+  if (typeof body.reponse === "string") donnees.reponse = body.reponse;
+  if (typeof body.publie === "boolean") donnees.publie = body.publie;
+  if (typeof body.ordre === "number") donnees.ordre = body.ordre;
+
+  const item = await prisma.faqItem.update({ where: { id }, data: donnees });
   return NextResponse.json(item);
 }
 

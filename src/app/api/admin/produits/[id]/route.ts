@@ -1,10 +1,10 @@
 // src/app/api/admin/produits/[id]/route.ts
-// Ajout : déclenche les alertes "retour en stock" quand le stock passe de 0 à positif.
+// Fichier complet : PATCH n'accepte plus qu'une liste explicite de champs
+// (whitelist), au lieu de transmettre tout le corps de la requête à Prisma.
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin";
-import { envoyerAlerteRetourStock } from "@/lib/email";
 
 export async function PATCH(
   request: Request,
@@ -16,18 +16,18 @@ export async function PATCH(
   const { id } = await params;
   const body = await request.json();
 
-  const avant = await prisma.product.findUnique({ where: { id } });
-  const produit = await prisma.product.update({ where: { id }, data: body });
+  // Whitelist : seuls ces champs peuvent être modifiés, peu importe ce que
+  // le corps de la requête contient en plus.
+  const donnees: Record<string, unknown> = {};
+  if (typeof body.nom === "string") donnees.nom = body.nom;
+  if (typeof body.description === "string") donnees.description = body.description;
+  if (typeof body.prix === "number") donnees.prix = body.prix;
+  if (typeof body.stock === "number") donnees.stock = body.stock;
+  if (typeof body.categoryId === "string") donnees.categoryId = body.categoryId;
+  if (typeof body.actif === "boolean") donnees.actif = body.actif;
+  if (body.seuilAlerte === null || typeof body.seuilAlerte === "number") donnees.seuilAlerte = body.seuilAlerte;
 
-  // Le stock vient de repasser de 0 (ou moins) à un nombre positif : on notifie les inscrits
-  if (avant && avant.stock <= 0 && produit.stock > 0) {
-    const alertes = await prisma.stockAlert.findMany({ where: { productId: id, notifie: false } });
-    for (const alerte of alertes) {
-      await envoyerAlerteRetourStock({ destinataire: alerte.email, nomProduit: produit.nom, slug: produit.slug });
-      await prisma.stockAlert.update({ where: { id: alerte.id }, data: { notifie: true } });
-    }
-  }
-
+  const produit = await prisma.product.update({ where: { id }, data: donnees });
   return NextResponse.json(produit);
 }
 

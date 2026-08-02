@@ -1,4 +1,7 @@
 // src/components/contact/ContactForm.tsx
+// Fichier complet : le formulaire est capturé dans une variable AVANT l'appel
+// réseau (await), au lieu d'accéder à e.currentTarget après — qui devient null
+// une fois l'opération asynchrone terminée.
 "use client";
 
 import { useState } from "react";
@@ -11,10 +14,11 @@ export function ContactForm() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget; // capturé AVANT le await, reste valide ensuite
     setChargement(true);
     setErreur("");
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
     const payload = {
       nom: formData.get("nom"),
       email: formData.get("email"),
@@ -30,12 +34,13 @@ export function ContactForm() {
     setChargement(false);
 
     if (!res.ok) {
-      setErreur("Une erreur est survenue, réessaie dans un instant.");
+      const data = await res.json();
+      setErreur(data.erreur || "Une erreur est survenue, réessaie dans un instant.");
       return;
     }
 
     setEnvoye(true);
-    e.currentTarget.reset();
+    form.reset(); // on utilise la référence capturée plus tôt, jamais e.currentTarget ici
   }
 
   if (envoye) {

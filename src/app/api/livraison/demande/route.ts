@@ -1,12 +1,18 @@
 // src/app/api/livraison/demande/route.ts
-// Le client demande à être livré dans une ville non encore couverte.
-// Notifie l'admin, qui pourra approuver (créant la zone) ou refuser depuis le back-office.
+// Fichier complet : limite de 5 demandes de zone par IP toutes les 60 minutes.
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { envoyerDemandeLivraisonAdmin } from "@/lib/email";
+import { verifierLimiteDebit, getIpClient } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
+  const ip = getIpClient(request);
+  const autorise = await verifierLimiteDebit(`demande-livraison:${ip}`, 5, 60);
+  if (!autorise) {
+    return NextResponse.json({ erreur: "Trop de demandes envoyées. Réessayez plus tard." }, { status: 429 });
+  }
+
   const { ville, nom, telephone, email } = await request.json();
 
   if (!ville || !nom || !telephone) {

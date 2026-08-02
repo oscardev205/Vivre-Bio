@@ -1,12 +1,11 @@
 // src/app/api/produits/[id]/avis/route.ts
-// GET : liste les avis d'un produit, avec le nombre de likes et si l'utilisateur
-// connecté a déjà liké chaque avis. POST : ajoute un avis (connexion obligatoire —
-// on veut savoir qui parle, pas d'avis anonymes).
+// Fichier complet : limite de 5 avis par IP toutes les 60 minutes (anti-spam d'avis).
 
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { verifierLimiteDebit, getIpClient } from "@/lib/rateLimit";
 
 export async function GET(
   request: Request,
@@ -49,6 +48,12 @@ export async function POST(
 
   if (!userId) {
     return NextResponse.json({ erreur: "Connectez-vous pour laisser un avis" }, { status: 401 });
+  }
+
+  const ip = getIpClient(request);
+  const autorise = await verifierLimiteDebit(`avis:${ip}`, 5, 60);
+  if (!autorise) {
+    return NextResponse.json({ erreur: "Trop d'avis envoyés récemment. Réessayez plus tard." }, { status: 429 });
   }
 
   const { note, commentaire } = await request.json();

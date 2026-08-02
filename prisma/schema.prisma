@@ -142,6 +142,18 @@ model Order {
 }
 
 // prisma/schema.prisma
+// Ajout : table de suivi des tentatives, utilisée pour limiter le débit sur
+// les routes sensibles (connexion, contact, codes promo, inscription...).
+
+model RateLimitAttempt {
+  id        String   @id @default(cuid())
+  cle       String
+  createdAt DateTime @default(now())
+
+  @@index([cle, createdAt])
+}
+
+// prisma/schema.prisma
 // Ajout : Parametre (réglages généraux clé/valeur, réutilisable pour d'autres
 // options futures), et reductionPoints sur Order (montant en FCFA de la
 // réduction points, séparé de montantReduction qui reste dédié aux codes promo).

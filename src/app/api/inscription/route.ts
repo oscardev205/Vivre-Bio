@@ -1,20 +1,25 @@
 // src/app/api/inscription/route.ts
-// Route API appelée par le formulaire d'inscription : valide, hash le mot de passe, crée le compte.
+// Fichier complet : limite de 5 inscriptions par IP toutes les 60 minutes,
+// et message générique qui ne confirme plus explicitement qu'un compte existe déjà.
 
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { inscriptionSchema } from "@/lib/validation";
+import { verifierLimiteDebit, getIpClient } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
+  const ip = getIpClient(request);
+  const autorise = await verifierLimiteDebit(`inscription:${ip}`, 5, 60);
+  if (!autorise) {
+    return NextResponse.json({ erreur: "Trop de tentatives. Réessayez plus tard." }, { status: 429 });
+  }
+
   const body = await request.json();
   const resultat = inscriptionSchema.safeParse(body);
 
   if (!resultat.success) {
-    return NextResponse.json(
-      { erreur: resultat.error.issues[0].message },
-      { status: 400 }
-    );
+    return NextResponse.json({ erreur: resultat.error.issues[0].message }, { status: 400 });
   }
 
   const { nom, email, telephone, password } = resultat.data;
@@ -23,8 +28,10 @@ export async function POST(request: Request) {
     where: { OR: [{ email }, { telephone }] },
   });
   if (existant) {
+    // Message volontairement générique — ne confirme pas explicitement qu'un
+    // compte existe déjà avec cet e-mail précis (évite l'énumération de comptes).
     return NextResponse.json(
-      { erreur: "Un compte existe déjà avec cet e-mail ou ce téléphone" },
+      { erreur: "Impossible de créer ce compte avec ces informations. Vérifiez vos données ou connectez-vous." },
       { status: 409 }
     );
   }

@@ -1,5 +1,7 @@
 // src/app/connexion/page.tsx
-// Le formulaire est désormais posé sur une carte 3D (.carte-3d-forte).
+// Fichier complet : distingue désormais le message de blocage (trop de tentatives)
+// du message générique "mot de passe incorrect", au lieu d'écraser toujours
+// l'erreur réelle par le même texte.
 "use client";
 
 import { useState } from "react";
@@ -27,7 +29,14 @@ export default function ConnexionPage() {
     setChargement(false);
 
     if (resultat?.error) {
-      setErreur("E-mail ou mot de passe incorrect");
+      // "CredentialsSignin" est le code renvoyé par NextAuth quand authorize()
+      // retourne null (mauvais mot de passe) — tout autre message est le nôtre,
+      // levé volontairement (ex: le blocage anti force-brute).
+      if (resultat.error === "CredentialsSignin") {
+        setErreur("E-mail ou mot de passe incorrect");
+      } else {
+        setErreur(resultat.error);
+      }
     } else {
       router.push("/commande");
     }
@@ -38,8 +47,8 @@ export default function ConnexionPage() {
       <div className="carte-3d-forte p-7">
         <h1 className="mb-6 text-xl font-semibold text-vivrebio-vert">Se connecter</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          <input name="email" type="email" placeholder="E-mail" required className="rounded-lg border border-sable px-3 py-2.5 text-sm" />
-          <input name="password" type="password" placeholder="Mot de passe" required className="rounded-lg border border-sable px-3 py-2.5 text-sm" />
+          <input name="email" type="email" placeholder="E-mail" required className="rounded-lg border border-sable px-3 py-2 text-sm" />
+          <input name="password" type="password" placeholder="Mot de passe" required className="rounded-lg border border-sable px-3 py-2 text-sm" />
           {erreur && <p className="text-xs text-vivrebio-rouge">{erreur}</p>}
           <Button type="submit" disabled={chargement}>
             {chargement ? "Connexion..." : "Se connecter"}

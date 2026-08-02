@@ -1,4 +1,6 @@
 // src/app/api/admin/zones-livraison/[id]/route.ts
+// Fichier complet : whitelist des champs modifiables.
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/admin";
@@ -12,7 +14,14 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await request.json();
-  const zone = await prisma.deliveryZone.update({ where: { id }, data: body });
+
+  const donnees: Record<string, unknown> = {};
+  if (typeof body.ville === "string") donnees.ville = body.ville;
+  if (typeof body.frais === "number") donnees.frais = body.frais;
+  if (body.delaiEstime === null || typeof body.delaiEstime === "string") donnees.delaiEstime = body.delaiEstime;
+  if (typeof body.actif === "boolean") donnees.actif = body.actif;
+
+  const zone = await prisma.deliveryZone.update({ where: { id }, data: donnees });
   return NextResponse.json(zone);
 }
 

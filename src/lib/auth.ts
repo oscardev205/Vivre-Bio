@@ -1,12 +1,13 @@
 // src/lib/auth.ts
-// Ajout : le téléphone de l'utilisateur est désormais inclus dans la session,
-// pour pouvoir pré-remplir les formulaires sans jamais le redemander.
+// Fichier complet : ajout d'une limite de 5 tentatives échouées par e-mail
+// toutes les 15 minutes, vérifiée AVANT même de comparer le mot de passe.
 
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { verifierLimiteDebit } from "@/lib/rateLimit";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -22,7 +23,15 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({ where: { email: credentials.email } });
+        const email = credentials.email.toLowerCase().trim();
+        const cle = `login:${email}`;
+
+        const autorise = await verifierLimiteDebit(cle, 5, 15);
+        if (!autorise) {
+          throw new Error("Trop de tentatives — réessayez dans 15 minutes.");
+        }
+
+        const user = await prisma.user.findUnique({ where: { email } });
         if (!user || !user.password) return null;
 
         const motDePasseValide = await bcrypt.compare(credentials.password, user.password);

@@ -1,11 +1,17 @@
 // src/app/api/newsletter/route.ts
-// POST : inscrit un e-mail à la newsletter. Gère le cas "déjà inscrit" proprement
-// (pas une erreur, juste une confirmation silencieuse).
+// Fichier complet : limite de 5 inscriptions newsletter par IP toutes les 60 minutes.
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifierLimiteDebit, getIpClient } from "@/lib/rateLimit";
 
 export async function POST(request: Request) {
+  const ip = getIpClient(request);
+  const autorise = await verifierLimiteDebit(`newsletter:${ip}`, 5, 60);
+  if (!autorise) {
+    return NextResponse.json({ erreur: "Trop de tentatives. Réessayez plus tard." }, { status: 429 });
+  }
+
   const { email } = await request.json();
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -15,8 +21,7 @@ export async function POST(request: Request) {
   try {
     await prisma.newsletterSubscriber.create({ data: { email: email.toLowerCase().trim() } });
   } catch {
-    // Déjà inscrit (contrainte unique) — on répond succès quand même,
-    // pas la peine d'exposer cette info ni de traiter ça comme une erreur.
+    // Déjà inscrit — on répond succès quand même
   }
 
   return NextResponse.json({ ok: true });
