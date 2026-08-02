@@ -1,7 +1,9 @@
 // src/components/layout/Header.tsx
-// Fichier complet : ThemeToggle réintégré dans la zone d'icônes.
+// Fichier complet : le texte "Vivre Bio" est remplacé par le logo image dans
+// le lien d'accueil (fond clair du header, le logo passe bien tel quel).
 
 import Link from "next/link";
+import Image from "next/image";
 import { getServerSession } from "next-auth";
 import { User, ShieldCheck } from "lucide-react";
 import { getCategories } from "@/lib/produits";
@@ -21,12 +23,18 @@ export async function Header() {
 
   return (
     <header className="sticky top-0 z-20 border-b border-sable bg-papier/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-3">
           <MobileMenu categories={categories} />
-          <Link href="/" className="text-xl font-bold tracking-tight">
-            <span className="text-vivrebio-rouge">V</span>
-            <span className="text-encre">ivre Bio</span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/logo.png"
+              alt="Vivre Bio"
+              width={160}
+              height={50}
+              className="h-10 w-auto sm:h-11"
+              priority
+            />
           </Link>
         </div>
 
