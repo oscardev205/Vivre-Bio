@@ -44,6 +44,9 @@ export const metadata: Metadata = {
     description: "Produits naturels et bio, sélectionnés avec exigence.",
   },
   robots: { index: true, follow: true },
+  verification: {
+    google: "zAIjlS9N3dpEevvVw6KRfjJDwcPFcYMiLvAVCE1OYkE",
+  },
 };
 
 export default function RootLayout({
