@@ -1,6 +1,5 @@
 // src/components/layout/Header.tsx
-// Fichier complet : ThemeToggle retiré de l'affichage (composant et contexte
-// intacts, réutilisables plus tard) — tout le reste ne change pas.
+// Fichier complet : ThemeToggle réintégré dans la zone d'icônes.
 
 import Link from "next/link";
 import { getServerSession } from "next-auth";
@@ -10,6 +9,7 @@ import { authOptions } from "@/lib/auth";
 import { CartIcon } from "@/components/layout/CartIcon";
 import { HeaderSearch } from "@/components/layout/HeaderSearch";
 import { MobileMenu } from "@/components/layout/MobileMenu";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 export async function Header() {
   const [categories, session] = await Promise.all([
@@ -48,6 +48,7 @@ export async function Header() {
               <ShieldCheck size={13} /> Admin
             </Link>
           )}
+          <ThemeToggle />
           <HeaderSearch />
           <Link href="/compte" aria-label="Mon compte"><User size={19} /></Link>
           <CartIcon />

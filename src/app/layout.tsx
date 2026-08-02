@@ -1,6 +1,5 @@
 // src/app/layout.tsx
-// Fichier complet : ajout de ThemeScript (dans le <head>) et ThemeProvider
-// (enveloppe l'app), en plus de tout ce qui existait déjà.
+// Fichier complet : ThemeScript et ThemeProvider réintégrés.
 
 import type { Metadata } from "next";
 import { Poppins, Great_Vibes } from "next/font/google";
