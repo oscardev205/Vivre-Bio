@@ -1,12 +1,15 @@
 // src/app/reinitialiser-mot-de-passe/page.tsx
+// Fichier complet : le contenu qui utilise useSearchParams() est extrait dans
+// un composant séparé, enveloppé dans <Suspense> — obligatoire pour que
+// Next.js puisse pré-générer cette page correctement au moment du build.
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { PasswordChecklist } from "@/components/ui/PasswordChecklist";
 
-export default function ReinitialiserMotDePassePage() {
+function FormulaireReinitialisation() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token") ?? "";
@@ -45,49 +48,52 @@ export default function ReinitialiserMotDePassePage() {
   }
 
   if (!token) {
+    return <p className="text-sm text-vivrebio-rouge">Lien invalide — aucun jeton fourni.</p>;
+  }
+
+  if (succes) {
     return (
-      <main className="mx-auto max-w-sm px-4 py-16">
-        <div className="carte-3d-forte p-7">
-          <p className="text-sm text-vivrebio-rouge">Lien invalide — aucun jeton fourni.</p>
-        </div>
-      </main>
+      <p className="text-sm text-vivrebio-vert">
+        Mot de passe modifié avec succès — redirection vers la connexion...
+      </p>
     );
   }
 
   return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <input
+        value={motDePasse}
+        onChange={(e) => setMotDePasse(e.target.value)}
+        type="password"
+        placeholder="Nouveau mot de passe"
+        required
+        className="rounded-lg border border-sable px-3 py-2.5 text-sm"
+      />
+      <PasswordChecklist motDePasse={motDePasse} />
+      <input
+        value={confirmation}
+        onChange={(e) => setConfirmation(e.target.value)}
+        type="password"
+        placeholder="Confirmer le mot de passe"
+        required
+        className="rounded-lg border border-sable px-3 py-2.5 text-sm"
+      />
+      {erreur && <p className="text-xs text-vivrebio-rouge">{erreur}</p>}
+      <Button type="submit" disabled={chargement}>
+        {chargement ? "Enregistrement..." : "Réinitialiser le mot de passe"}
+      </Button>
+    </form>
+  );
+}
+
+export default function ReinitialiserMotDePassePage() {
+  return (
     <main className="mx-auto max-w-sm px-4 py-16">
       <div className="carte-3d-forte p-7">
         <h1 className="mb-6 text-xl font-semibold text-vivrebio-vert">Nouveau mot de passe</h1>
-
-        {succes ? (
-          <p className="text-sm text-vivrebio-vert">
-            Mot de passe modifié avec succès — redirection vers la connexion...
-          </p>
-        ) : (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-            <input
-              value={motDePasse}
-              onChange={(e) => setMotDePasse(e.target.value)}
-              type="password"
-              placeholder="Nouveau mot de passe"
-              required
-              className="rounded-lg border border-sable px-3 py-2.5 text-sm"
-            />
-            <PasswordChecklist motDePasse={motDePasse} />
-            <input
-              value={confirmation}
-              onChange={(e) => setConfirmation(e.target.value)}
-              type="password"
-              placeholder="Confirmer le mot de passe"
-              required
-              className="rounded-lg border border-sable px-3 py-2.5 text-sm"
-            />
-            {erreur && <p className="text-xs text-vivrebio-rouge">{erreur}</p>}
-            <Button type="submit" disabled={chargement}>
-              {chargement ? "Enregistrement..." : "Réinitialiser le mot de passe"}
-            </Button>
-          </form>
-        )}
+        <Suspense fallback={<p className="text-sm text-encre/40">Chargement...</p>}>
+          <FormulaireReinitialisation />
+        </Suspense>
       </div>
     </main>
   );
