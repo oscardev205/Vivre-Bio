@@ -1,13 +1,17 @@
 // src/app/inscription/page.tsx
+// Fichier complet : le champ mot de passe devient contrôlé (state) pour
+// alimenter la checklist en direct, avec l'appel à l'API inchangé par ailleurs.
 "use client";
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { PasswordChecklist } from "@/components/ui/PasswordChecklist";
 
 export default function InscriptionPage() {
   const router = useRouter();
+  const [password, setPassword] = useState("");
   const [erreur, setErreur] = useState("");
   const [chargement, setChargement] = useState(false);
 
@@ -21,7 +25,7 @@ export default function InscriptionPage() {
       nom: formData.get("nom"),
       email: formData.get("email"),
       telephone: formData.get("telephone"),
-      password: formData.get("password"),
+      password,
     };
 
     const res = await fetch("/api/inscription", {
@@ -55,7 +59,15 @@ export default function InscriptionPage() {
           <input name="nom" placeholder="Nom complet" required className="rounded-lg border border-sable px-3 py-2.5 text-sm" />
           <input name="email" type="email" placeholder="E-mail" required className="rounded-lg border border-sable px-3 py-2.5 text-sm" />
           <input name="telephone" placeholder="Téléphone" required className="rounded-lg border border-sable px-3 py-2.5 text-sm" />
-          <input name="password" type="password" placeholder="Mot de passe" required minLength={6} className="rounded-lg border border-sable px-3 py-2.5 text-sm" />
+          <input
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            type="password"
+            placeholder="Mot de passe"
+            required
+            className="rounded-lg border border-sable px-3 py-2.5 text-sm"
+          />
+          <PasswordChecklist motDePasse={password} />
           {erreur && <p className="text-xs text-vivrebio-rouge">{erreur}</p>}
           <Button type="submit" disabled={chargement}>
             {chargement ? "Création..." : "Créer mon compte"}

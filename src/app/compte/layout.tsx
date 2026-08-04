@@ -1,10 +1,10 @@
 // src/app/compte/layout.tsx
-// Fichier complet : la nav passe en défilement horizontal propre sur mobile
-// (au lieu de wrap désordonné ou débordement), verticale en colonne sur desktop.
+// Fichier complet : ajout du badge de messages non lus à côté de "Mes commandes".
 
 import Link from "next/link";
 import { LayoutDashboard, Package, MapPin, Settings, Heart, Gift } from "lucide-react";
 import { DeconnexionButton } from "@/components/compte/DeconnexionButton";
+import { BadgeMessagesClient } from "@/components/compte/BadgeMessagesClient";
 
 export default function CompteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,7 +18,7 @@ export default function CompteLayout({ children }: { children: React.ReactNode }
               <LayoutDashboard size={16} /> Tableau de bord
             </Link>
             <Link href="/compte/commandes" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
-              <Package size={16} /> Mes commandes
+              <Package size={16} /> Mes commandes <BadgeMessagesClient />
             </Link>
             <Link href="/compte/adresses" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
               <MapPin size={16} /> Mes adresses

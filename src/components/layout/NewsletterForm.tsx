@@ -1,10 +1,9 @@
 // src/components/layout/NewsletterForm.tsx
-// Fichier complet : le champ e-mail devient min-w-0 (peut rétrécir sans pousser
-// le bouton hors de vue), et sur mobile le bouton passe en dessous plutôt que
-// de risquer d'être coupé par la protection anti-débordement globale.
+// Fichier complet : ajout du honeypot.
 "use client";
 
 import { useState } from "react";
+import { ChampHoneypot } from "@/components/ui/ChampHoneypot";
 
 export function NewsletterForm() {
   const [email, setEmail] = useState("");
@@ -12,15 +11,17 @@ export function NewsletterForm() {
   const [erreur, setErreur] = useState("");
   const [chargement, setChargement] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
     setChargement(true);
     setErreur("");
 
+    const formData = new FormData(form);
     const res = await fetch("/api/newsletter", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, site_web: formData.get("site_web") }),
     });
 
     setChargement(false);
@@ -41,6 +42,7 @@ export function NewsletterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-1.5">
+      <ChampHoneypot />
       <div className="flex flex-col gap-2 xs:flex-row">
         <input
           type="email"

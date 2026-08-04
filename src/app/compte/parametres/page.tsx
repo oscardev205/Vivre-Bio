@@ -5,6 +5,7 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
+import { PasswordChecklist } from "@/components/ui/PasswordChecklist";
 
 export default function ParametresPage() {
   const { data: session, update } = useSession();
@@ -120,15 +121,8 @@ export default function ParametresPage() {
             required
             className="rounded-lg border border-sable px-3 py-2.5 text-sm"
           />
-          <input
-            type="password"
-            value={nouveauMdp}
-            onChange={(e) => setNouveauMdp(e.target.value)}
-            placeholder="Nouveau mot de passe"
-            required
-            minLength={6}
-            className="rounded-lg border border-sable px-3 py-2.5 text-sm"
-          />
+          <input type="password" value={nouveauMdp} onChange={(e) => setNouveauMdp(e.target.value)} placeholder="Nouveau mot de passe (8 car. min., lettre + chiffre)" required minLength={8} className="rounded-lg border border-sable px-3 py-2.5 text-sm" />
+          <PasswordChecklist motDePasse={nouveauMdp} />
           <input
             type="password"
             value={confirmationMdp}

@@ -57,6 +57,9 @@ export default function ConnexionPage() {
         <p className="mt-4 text-center text-xs text-encre/50">
           Pas encore de compte ? <a href="/inscription" className="text-vivrebio-vert">S&apos;inscrire</a>
         </p>
+        <p className="mt-2 text-center text-xs">
+  <a href="/mot-de-passe-oublie" className="text-encre/50 hover:text-vivrebio-vert">Mot de passe oublié ?</a>
+</p>
       </div>
     </main>
   );

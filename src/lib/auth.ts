@@ -1,6 +1,8 @@
 // src/lib/auth.ts
-// Fichier complet : ajout d'une limite de 5 tentatives échouées par e-mail
-// toutes les 15 minutes, vérifiée AVANT même de comparer le mot de passe.
+// Fichier complet : la session inclut désormais versionSession, et le callback
+// jwt revérifie à chaque requête que cette version correspond toujours à celle
+// en base — si elle a changé (mot de passe modifié entre-temps), la session
+// est invalidée (l'utilisateur est déconnecté au prochain chargement de page).
 
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -37,7 +39,14 @@ export const authOptions: NextAuthOptions = {
         const motDePasseValide = await bcrypt.compare(credentials.password, user.password);
         if (!motDePasseValide) return null;
 
-        return { id: user.id, name: user.nom, email: user.email, role: user.role, telephone: user.telephone };
+        return {
+          id: user.id,
+          name: user.nom,
+          email: user.email,
+          role: user.role,
+          telephone: user.telephone,
+          versionSession: user.versionSession,
+        };
       },
     }),
   ],
@@ -47,10 +56,29 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = (user as unknown as { role: string }).role;
         token.telephone = (user as unknown as { telephone?: string | null }).telephone;
+        token.versionSession = (user as unknown as { versionSession: number }).versionSession;
       }
+
+      // À chaque utilisation du token (pas seulement à la connexion), on
+      // revérifie que la version n'a pas changé entre-temps en base.
+      if (token.id) {
+        const utilisateurActuel = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { versionSession: true },
+        });
+
+        if (!utilisateurActuel || utilisateurActuel.versionSession !== token.versionSession) {
+          return {}; // vide le token — NextAuth traitera ça comme non connecté
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
+      // Si le token a été vidé ci-dessus (session invalidée), pas d'id dedans
+      if (!token.id) {
+        return { ...session, user: undefined };
+      }
       if (session.user) {
         (session.user as { id?: string; role?: string; telephone?: string | null }).id = token.id as string;
         (session.user as { id?: string; role?: string; telephone?: string | null }).role = token.role as string;

@@ -1,11 +1,14 @@
 // src/app/api/compte/mot-de-passe/route.ts
-// PATCH : vérifie l'ancien mot de passe avant d'enregistrer le nouveau (hashé).
+// Fichier complet : incrémente versionSession après le changement — toute
+// session ouverte ailleurs (autre appareil/navigateur) sera invalidée au
+// prochain chargement de page.
 
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { motDePasseSchema } from "@/lib/validation";
 
 export async function PATCH(request: Request) {
   const session = await getServerSession(authOptions);
@@ -14,8 +17,9 @@ export async function PATCH(request: Request) {
 
   const { ancienMotDePasse, nouveauMotDePasse } = await request.json();
 
-  if (!nouveauMotDePasse || nouveauMotDePasse.length < 6) {
-    return NextResponse.json({ erreur: "Le nouveau mot de passe doit contenir au moins 6 caractères" }, { status: 400 });
+  const resultat = motDePasseSchema.safeParse(nouveauMotDePasse);
+  if (!resultat.success) {
+    return NextResponse.json({ erreur: resultat.error.issues[0].message }, { status: 400 });
   }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -28,8 +32,11 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ erreur: "Mot de passe actuel incorrect" }, { status: 400 });
   }
 
-  const nouveauHash = await bcrypt.hash(nouveauMotDePasse, 10);
-  await prisma.user.update({ where: { id: userId }, data: { password: nouveauHash } });
+  const nouveauHash = await bcrypt.hash(resultat.data, 10);
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: nouveauHash, versionSession: { increment: 1 } },
+  });
 
   return NextResponse.json({ ok: true });
 }

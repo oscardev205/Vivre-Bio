@@ -1,5 +1,6 @@
 // src/app/compte/commandes/page.tsx
-// Liste de toutes les commandes de l'utilisateur connecté, triées de la plus récente à la plus ancienne.
+// Fichier complet : ajout d'un badge par commande indiquant le nombre de
+// messages ADMIN non lus, sur le même principe que la liste admin.
 
 import { getServerSession } from "next-auth";
 import Link from "next/link";
@@ -24,26 +25,36 @@ export default async function CommandesPage() {
   const commandes = await prisma.order.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
-    include: { items: true },
+    include: {
+      items: true,
+      _count: { select: { messages: { where: { auteur: "ADMIN", lu: false } } } },
+    },
   });
 
   if (commandes.length === 0) {
-    return <p className="text-sm text-gray-400">Vous n&apos;avez pas encore passé de commande.</p>;
+    return <p className="text-sm text-encre/40">Vous n&apos;avez pas encore passé de commande.</p>;
   }
 
   return (
-    <div className="divide-y divide-gray-100 rounded-xl border border-gray-100">
+    <div className="divide-y divide-sable rounded-xl border border-sable">
       {commandes.map((commande) => (
         <Link
           key={commande.id}
           href={`/compte/commandes/${commande.numero}`}
-          className="flex items-center justify-between p-4 hover:bg-gray-50"
+          className="flex flex-col gap-2 p-4 hover:bg-vert-pale sm:flex-row sm:items-center sm:justify-between"
         >
-          <div>
-            <p className="text-sm font-medium">{commande.numero}</p>
-            <p className="text-xs text-gray-400">
-              {new Date(commande.createdAt).toLocaleDateString("fr-FR")} · {commande.items.length} article(s)
-            </p>
+          <div className="flex items-center gap-2">
+            <div>
+              <p className="text-sm font-medium">{commande.numero}</p>
+              <p className="text-xs text-encre/40">
+                {new Date(commande.createdAt).toLocaleDateString("fr-FR")} · {commande.items.length} article(s)
+              </p>
+            </div>
+            {commande._count.messages > 0 && (
+              <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-vivrebio-rouge px-1.5 text-[11px] font-medium text-white">
+                {commande._count.messages}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm font-medium">{formatPrix(commande.total)}</span>

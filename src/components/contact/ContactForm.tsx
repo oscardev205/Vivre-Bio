@@ -1,11 +1,10 @@
 // src/components/contact/ContactForm.tsx
-// Fichier complet : le formulaire est capturé dans une variable AVANT l'appel
-// réseau (await), au lieu d'accéder à e.currentTarget après — qui devient null
-// une fois l'opération asynchrone terminée.
+// Fichier complet : ajout du champ honeypot invisible.
 "use client";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { ChampHoneypot } from "@/components/ui/ChampHoneypot";
 
 export function ContactForm() {
   const [chargement, setChargement] = useState(false);
@@ -14,7 +13,7 @@ export function ContactForm() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = e.currentTarget; // capturé AVANT le await, reste valide ensuite
+    const form = e.currentTarget;
     setChargement(true);
     setErreur("");
 
@@ -23,6 +22,7 @@ export function ContactForm() {
       nom: formData.get("nom"),
       email: formData.get("email"),
       message: formData.get("message"),
+      site_web: formData.get("site_web"),
     };
 
     const res = await fetch("/api/contact", {
@@ -40,7 +40,7 @@ export function ContactForm() {
     }
 
     setEnvoye(true);
-    form.reset(); // on utilise la référence capturée plus tôt, jamais e.currentTarget ici
+    form.reset();
   }
 
   if (envoye) {
@@ -56,6 +56,7 @@ export function ContactForm() {
   return (
     <div className="carte-3d p-6">
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <ChampHoneypot />
         <input name="nom" placeholder="Votre nom" required className="rounded-lg border border-sable px-3 py-2.5 text-sm" />
         <input name="email" type="email" placeholder="Votre e-mail" required className="rounded-lg border border-sable px-3 py-2.5 text-sm" />
         <textarea name="message" placeholder="Votre message" required rows={5} className="rounded-lg border border-sable px-3 py-2.5 text-sm" />
