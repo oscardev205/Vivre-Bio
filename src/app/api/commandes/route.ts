@@ -10,7 +10,7 @@ import { prisma } from "@/lib/prisma";
 import { genererNumeroCommande } from "@/lib/order";
 import { getFraisLivraison } from "@/lib/livraison";
 import { estFideliteActive } from "@/lib/parametres";
-import { VALEUR_POINT_EN_FCFA } from "@/lib/fidelite";
+import { getValeurPointFcfa } from "@/lib/fidelite";
 
 type PanierEntree = { productId: string; quantite: number };
 
@@ -145,9 +145,9 @@ export async function POST(request: Request) {
     const utilisateur = await prisma.user.findUnique({ where: { id: userId } });
     const soldeReel = utilisateur?.pointsFidelite ?? 0;
     pointsReellementUtilises = Math.min(pointsUtilises, soldeReel);
-    reductionPoints = pointsReellementUtilises * VALEUR_POINT_EN_FCFA;
+    const valeurPoint = await getValeurPointFcfa();
+    reductionPoints = pointsReellementUtilises * valeurPoint;
   }
-
   const total = Math.max(0, sousTotal - montantReduction - reductionPoints) + fraisLivraison;
 
   const commande = await prisma.$transaction(async (tx) => {

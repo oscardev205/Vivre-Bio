@@ -317,3 +317,45 @@ export async function envoyerLienReinitialisation(params: { destinataire: string
     console.error("[email] Erreur d'envoi (réinitialisation) :", error);
   }
 }
+
+// src/lib/email.ts
+// Ajout à la fin du fichier existant : notification au livreur assigné.
+
+export async function envoyerNotificationAssignationLivreur(params: { destinataire: string; numero: string }) {
+  const { destinataire, numero } = params;
+
+  try {
+    const resultat = await emailjs.send(process.env.EMAILJS_SERVICE_ID!, process.env.EMAILJS_TEMPLATE_ID_CLIENT!, {
+      to_email: destinataire,
+      titre: "🚚 Nouvelle livraison assignée",
+      message_intro: `Une nouvelle commande vous a été assignée : <strong>${echapperHtml(numero)}</strong>. Consultez votre espace livreur pour voir l'adresse et les détails.`,
+      numero: "",
+      total: "",
+      lignes: "",
+    });
+    console.log("[email] Notification livreur envoyée :", resultat.status, destinataire);
+  } catch (error) {
+    console.error("[email] Erreur d'envoi (assignation livreur) :", error);
+  }
+}
+
+// src/lib/email.ts
+// Ajout à la fin du fichier existant.
+
+export async function envoyerNotificationGainParrainage(params: { destinataire: string; points: number; nomFilleul: string }) {
+  const { destinataire, points, nomFilleul } = params;
+
+  try {
+    const resultat = await emailjs.send(process.env.EMAILJS_SERVICE_ID!, process.env.EMAILJS_TEMPLATE_ID_CLIENT!, {
+      to_email: destinataire,
+      titre: "💰 Commission de parrainage",
+      message_intro: `<strong>${echapperHtml(nomFilleul)}</strong> vient de passer commande — vous avez gagné <strong>${points} points</strong> de commission ! Consultez votre espace parrainage pour voir le détail.`,
+      numero: "",
+      total: "",
+      lignes: "",
+    });
+    console.log("[email] Notification gain parrainage envoyée :", resultat.status, destinataire);
+  } catch (error) {
+    console.error("[email] Erreur d'envoi (gain parrainage) :", error);
+  }
+}

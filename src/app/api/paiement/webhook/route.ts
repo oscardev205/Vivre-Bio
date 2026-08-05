@@ -11,6 +11,7 @@ import { kkiapay } from "@kkiapay-org/nodejs-sdk";
 import { envoyerEmailConfirmationCommande, envoyerEmailNotificationAdmin } from "@/lib/email";
 import { calculerPointsGagnes } from "@/lib/fidelite";
 import { estFideliteActive } from "@/lib/parametres";
+import { crediterCommissionParrainage } from "@/lib/parrainageCredit";
 
 const k = kkiapay({
   privatekey: process.env.KKIAPAY_PRIVATE_KEY!,
@@ -90,6 +91,10 @@ export async function POST(request: Request) {
         ]);
       }
     }
+
+    // Commission de parrainage — indépendante des points de fidélité classiques,
+    // se déclenche même si le programme fidélité "normal" est désactivé.
+    await crediterCommissionParrainage(commande.id);
 
     const emailClient = commande.user?.email ?? commande.emailInvite;
     const lignesEmail = commande.items.map((l) => ({ nom: l.product.nom, quantite: l.quantite, prixUnitaire: l.prixUnitaire }));

@@ -1,10 +1,9 @@
 // src/app/compte/layout.tsx
-// Fichier complet : ajout du badge de messages non lus à côté de "Mes commandes".
+// Fichier complet : utilise désormais <CompteNav /> pour la navigation,
+// avec mise en évidence de l'onglet actif.
 
-import Link from "next/link";
-import { LayoutDashboard, Package, MapPin, Settings, Heart, Gift } from "lucide-react";
 import { DeconnexionButton } from "@/components/compte/DeconnexionButton";
-import { BadgeMessagesClient } from "@/components/compte/BadgeMessagesClient";
+import { CompteNav } from "@/components/compte/CompteNav";
 
 export default function CompteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,26 +12,7 @@ export default function CompteLayout({ children }: { children: React.ReactNode }
 
       <div className="flex flex-col gap-6 md:flex-row md:gap-8">
         <aside className="w-full shrink-0 md:w-48">
-          <nav className="flex gap-2 overflow-x-auto pb-2 text-sm md:flex-col md:gap-1 md:overflow-visible md:pb-0">
-            <Link href="/compte" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
-              <LayoutDashboard size={16} /> Tableau de bord
-            </Link>
-            <Link href="/compte/commandes" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
-              <Package size={16} /> Mes commandes <BadgeMessagesClient />
-            </Link>
-            <Link href="/compte/adresses" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
-              <MapPin size={16} /> Mes adresses
-            </Link>
-            <Link href="/compte/favoris" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
-              <Heart size={16} /> Mes favoris
-            </Link>
-            <Link href="/compte/fidelite" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
-              <Gift size={16} /> Mes points
-            </Link>
-            <Link href="/compte/parametres" className="flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-sable px-3 py-2 hover:bg-vert-pale md:border-0 md:px-2 md:py-1.5">
-              <Settings size={16} /> Paramètres
-            </Link>
-          </nav>
+          <CompteNav />
           <div className="mt-4 border-t border-sable pt-4">
             <DeconnexionButton />
           </div>

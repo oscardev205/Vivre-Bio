@@ -1,6 +1,5 @@
 // src/app/api/admin/produits/[id]/route.ts
-// Fichier complet : PATCH n'accepte plus qu'une liste explicite de champs
-// (whitelist), au lieu de transmettre tout le corps de la requête à Prisma.
+// Fichier complet : ajoute imageUrl à la whitelist déjà en place.
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -16,8 +15,6 @@ export async function PATCH(
   const { id } = await params;
   const body = await request.json();
 
-  // Whitelist : seuls ces champs peuvent être modifiés, peu importe ce que
-  // le corps de la requête contient en plus.
   const donnees: Record<string, unknown> = {};
   if (typeof body.nom === "string") donnees.nom = body.nom;
   if (typeof body.description === "string") donnees.description = body.description;
@@ -26,6 +23,7 @@ export async function PATCH(
   if (typeof body.categoryId === "string") donnees.categoryId = body.categoryId;
   if (typeof body.actif === "boolean") donnees.actif = body.actif;
   if (body.seuilAlerte === null || typeof body.seuilAlerte === "number") donnees.seuilAlerte = body.seuilAlerte;
+  if (body.imageUrl === null || typeof body.imageUrl === "string") donnees.imageUrl = body.imageUrl;
 
   const produit = await prisma.product.update({ where: { id }, data: donnees });
   return NextResponse.json(produit);

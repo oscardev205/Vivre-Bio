@@ -3,7 +3,7 @@
 
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { ProductImagePlaceholder } from "@/components/ui/ProductImagePlaceholder";
+
 import { AddToCartButton } from "@/components/produits/AddToCartButton";
 import { BoutonLikeProduit } from "@/components/produits/BoutonLikeProduit";
 import { SectionAvis } from "@/components/produits/SectionAvis";
@@ -14,6 +14,7 @@ import { formatPrix } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { getProduitBySlug, getProduitsSimilaires } from "@/lib/produits";
 import { AlerteStock } from "@/components/produits/AlerteStock";
+import { ProductImage } from "@/components/ui/ProductImage";
 
 export async function generateMetadata({
   params,
@@ -78,8 +79,8 @@ export default async function ProduitPage({
       </p>
 
       <div className="flex flex-col gap-10 md:flex-row">
-        <div className="h-64 w-full shrink-0 overflow-hidden rounded-2xl md:w-72">
-          <ProductImagePlaceholder nom={produit.nom} />
+        <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-2xl md:w-72">
+          <ProductImage slug={produit.slug} nom={produit.nom} imageUrl={produit.imageUrl} />
         </div>
 
         <div className="flex-1">

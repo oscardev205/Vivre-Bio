@@ -1,13 +1,18 @@
 // next.config.ts
-// Fichier complet : script-src autorise désormais 'unsafe-eval' UNIQUEMENT quand
-// NODE_ENV n'est pas "production" (donc en développement local uniquement) —
-// React en a besoin pour ses outils de débogage, mais ne l'utilise jamais en
-// production. La CSP réelle du site déployé reste donc aussi stricte qu'avant.
+// Fichier complet : ajout de images.remotePatterns pour autoriser l'affichage
+// des photos hébergées sur Vercel Blob, et mise à jour de la CSP (img-src)
+// pour les autoriser aussi — le reste du fichier reste identique à avant.
 
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["@react-pdf/renderer"],
+
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+    ],
+  },
 
   async headers() {
     const estDeveloppement = process.env.NODE_ENV !== "production";
@@ -16,7 +21,7 @@ const nextConfig: NextConfig = {
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline' ${estDeveloppement ? "'unsafe-eval'" : ""} https://cdn.kkiapay.me`,
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: https://*.tile.openstreetmap.org",
+      "img-src 'self' data: https://*.tile.openstreetmap.org https://*.public.blob.vercel-storage.com",
       "font-src 'self' data:",
       "connect-src 'self' https://*.kkiapay.me",
       "frame-src 'self' https://*.kkiapay.me",

@@ -1,17 +1,18 @@
 // src/components/layout/Header.tsx
-// Fichier complet : le texte "Vivre Bio" est remplacé par le logo image dans
-// le lien d'accueil (fond clair du header, le logo passe bien tel quel).
+// Fichier complet : utilise désormais HeaderNavPrincipale et HeaderCategories
+// pour mettre en évidence l'onglet/catégorie actif.
 
 import Link from "next/link";
 import Image from "next/image";
 import { getServerSession } from "next-auth";
-import { User, ShieldCheck } from "lucide-react";
+import { User, ShieldCheck, Truck } from "lucide-react";
 import { getCategories } from "@/lib/produits";
 import { authOptions } from "@/lib/auth";
 import { CartIcon } from "@/components/layout/CartIcon";
 import { HeaderSearch } from "@/components/layout/HeaderSearch";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { HeaderNavPrincipale, HeaderCategories } from "@/components/layout/HeaderNav";
 
 export async function Header() {
   const [categories, session] = await Promise.all([
@@ -19,7 +20,7 @@ export async function Header() {
     getServerSession(authOptions),
   ]);
 
-  const estAdmin = (session?.user as { role?: string })?.role === "ADMIN";
+  const role = (session?.user as { role?: string })?.role;
 
   return (
     <header className="sticky top-0 z-20 border-b border-sable bg-papier/95 backdrop-blur">
@@ -27,33 +28,21 @@ export async function Header() {
         <div className="flex items-center gap-3">
           <MobileMenu categories={categories} />
           <Link href="/" className="flex items-center">
-            <Image
-              src="/logo.png"
-              alt="Vivre Bio"
-              width={160}
-              height={50}
-              className="h-10 w-auto sm:h-11"
-              priority
-            />
+            <Image src="/logo.png" alt="Vivre Bio" width={160} height={50} className="h-10 w-auto sm:h-11" priority />
           </Link>
         </div>
 
-        <nav className="hidden gap-8 text-sm font-medium text-encre/70 md:flex">
-          <Link href="/" className="transition hover:text-encre">Accueil</Link>
-          <Link href="/boutique" className="transition hover:text-encre">Boutique</Link>
-          <Link href="/blog" className="transition hover:text-encre">Blog</Link>
-          <Link href="/a-propos" className="transition hover:text-encre">À propos</Link>
-          <Link href="/contact" className="transition hover:text-encre">Contact</Link>
-        </nav>
+        <HeaderNavPrincipale />
 
         <div className="flex items-center gap-4 text-encre sm:gap-5">
-          {estAdmin && (
-            <Link
-              href="/admin"
-              aria-label="Back-office admin"
-              className="hidden items-center gap-1.5 rounded-full bg-vivrebio-rouge px-3 py-1 text-xs font-medium text-white sm:flex"
-            >
+          {role === "ADMIN" && (
+            <Link href="/admin" aria-label="Back-office admin" className="hidden items-center gap-1.5 rounded-full bg-vivrebio-rouge px-3 py-1 text-xs font-medium text-white sm:flex">
               <ShieldCheck size={13} /> Admin
+            </Link>
+          )}
+          {role === "LIVREUR" && (
+            <Link href="/livreur" aria-label="Espace livreur" className="hidden items-center gap-1.5 rounded-full bg-vivrebio-vert px-3 py-1 text-xs font-medium text-white sm:flex">
+              <Truck size={13} /> Mes livraisons
             </Link>
           )}
           <ThemeToggle />
@@ -63,23 +52,7 @@ export async function Header() {
         </div>
       </div>
 
-      <div className="mx-auto hidden max-w-6xl gap-2 overflow-x-auto px-4 pb-3 md:flex">
-        <Link
-          href="/boutique"
-          className="whitespace-nowrap rounded-full border border-sable px-3.5 py-1.5 text-xs font-medium text-encre/70 transition hover:border-vivrebio-vert hover:text-vivrebio-vert"
-        >
-          Tout
-        </Link>
-        {categories.map((cat) => (
-          <Link
-            key={cat.id}
-            href={`/boutique?categorie=${cat.slug}`}
-            className="whitespace-nowrap rounded-full border border-sable px-3.5 py-1.5 text-xs font-medium text-encre/70 transition hover:border-vivrebio-vert hover:text-vivrebio-vert"
-          >
-            {cat.nom}
-          </Link>
-        ))}
-      </div>
+      <HeaderCategories categories={categories} />
     </header>
   );
 }

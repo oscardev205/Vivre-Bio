@@ -1,5 +1,6 @@
 // src/app/api/admin/produits/route.ts
-// POST : création d'un nouveau produit. Réservé aux admins.
+// Fichier complet : ajoute imageUrl à la création, sans toucher au reste
+// (vérification du slug déjà existante, conservée telle quelle).
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -11,7 +12,7 @@ export async function POST(request: Request) {
   if (!session) return NextResponse.json({ erreur: "Non autorisé" }, { status: 403 });
 
   const body = await request.json();
-  const { nom, description, prix, stock, categoryId, actif } = body;
+  const { nom, description, prix, stock, categoryId, actif, seuilAlerte, imageUrl } = body;
 
   if (!nom || !description || !categoryId || Number.isNaN(prix) || Number.isNaN(stock)) {
     return NextResponse.json({ erreur: "Champs invalides" }, { status: 400 });
@@ -24,7 +25,11 @@ export async function POST(request: Request) {
   }
 
   const produit = await prisma.product.create({
-    data: { nom, slug, description, prix, stock, categoryId, actif },
+    data: {
+      nom, slug, description, prix, stock, categoryId, actif,
+      seuilAlerte: seuilAlerte ?? null,
+      imageUrl: imageUrl || null,
+    },
   });
 
   return NextResponse.json(produit);

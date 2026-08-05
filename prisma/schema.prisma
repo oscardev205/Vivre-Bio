@@ -42,6 +42,8 @@ model Product {
 
   stockAlerts StockAlert[]
   seuilAlerte Int?
+
+  imageUrl String?
 }
 
 model ProductImage {
@@ -75,11 +77,26 @@ model User {
   passwordResetTokens PasswordResetToken[]
 
   versionSession Int @default(0)
+
+  // Livraison
+  disponible Boolean @default(false) // pertinent uniquement pour les livreurs
+  livraisonsAssignees Order[] @relation("LivreurCommandes")
+
+  // Parrainage
+  codeParrainage String? @unique
+  parrainId      String?
+  parrain        User?   @relation("Parrainages", fields: [parrainId], references: [id])
+  filleuls       User[]  @relation("Parrainages")
+  gainsRecus     GainParrainage[] @relation("GainsDuParrain")
+  gainsGeneres   GainParrainage[] @relation("GainsGeneresParFilleul")
+
+  actif Boolean @default(true)
 }
 
 enum Role {
   CLIENT
   ADMIN
+  LIVREUR
 }
 
 model Address {
@@ -143,6 +160,11 @@ model Order {
   pointsGagnes   Int @default(0)
 
   reductionPoints Int @default(0)
+
+  livreurId              String?
+  livreur                User?   @relation("LivreurCommandes", fields: [livreurId], references: [id])
+  livraisonConfirmeePar  String? // "CLIENT" ou "LIVREUR"
+  gainParrainage         GainParrainage?
 }
 
 // prisma/schema.prisma
@@ -391,4 +413,33 @@ model ProductLike {
   createdAt DateTime @default(now())
 
   @@unique([productId, userId])
+}
+
+// ------------------------------
+// PARRAINAGE
+// ------------------------------
+
+model GainParrainage {
+  id        String   @id @default(cuid())
+  parrainId String
+  parrain   User     @relation("GainsDuParrain", fields: [parrainId], references: [id])
+  filleulId String
+  filleul   User     @relation("GainsGeneresParFilleul", fields: [filleulId], references: [id])
+  orderId   String?  @unique
+  order     Order?   @relation(fields: [orderId], references: [id])
+  type      String   // "PREMIERE_COMMANDE" ou "COMMISSION"
+  points    Int
+  createdAt DateTime @default(now())
+}
+
+model MessageParrainage {
+  id         String   @id @default(cuid())
+  parrainId  String
+  filleulId  String
+  auteurId   String   // id du parrain ou du filleul, selon qui a écrit
+  contenu    String
+  lu         Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([parrainId, filleulId])
 }

@@ -1,8 +1,6 @@
 // src/lib/auth.ts
-// Fichier complet : la session inclut désormais versionSession, et le callback
-// jwt revérifie à chaque requête que cette version correspond toujours à celle
-// en base — si elle a changé (mot de passe modifié entre-temps), la session
-// est invalidée (l'utilisateur est déconnecté au prochain chargement de page).
+// Fichier complet : ajout de la vérification "actif" — un compte désactivé
+// ne peut plus se connecter, même avec le bon mot de passe.
 
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -35,6 +33,9 @@ export const authOptions: NextAuthOptions = {
 
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user || !user.password) return null;
+        if (!user.actif) {
+          throw new Error("Ce compte a été désactivé. Contactez l'administrateur.");
+        }
 
         const motDePasseValide = await bcrypt.compare(credentials.password, user.password);
         if (!motDePasseValide) return null;
@@ -59,23 +60,20 @@ export const authOptions: NextAuthOptions = {
         token.versionSession = (user as unknown as { versionSession: number }).versionSession;
       }
 
-      // À chaque utilisation du token (pas seulement à la connexion), on
-      // revérifie que la version n'a pas changé entre-temps en base.
       if (token.id) {
         const utilisateurActuel = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { versionSession: true },
+          select: { versionSession: true, actif: true },
         });
 
-        if (!utilisateurActuel || utilisateurActuel.versionSession !== token.versionSession) {
-          return {}; // vide le token — NextAuth traitera ça comme non connecté
+        if (!utilisateurActuel || !utilisateurActuel.actif || utilisateurActuel.versionSession !== token.versionSession) {
+          return {};
         }
       }
 
       return token;
     },
     async session({ session, token }) {
-      // Si le token a été vidé ci-dessus (session invalidée), pas d'id dedans
       if (!token.id) {
         return { ...session, user: undefined };
       }

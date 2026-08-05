@@ -1,66 +1,59 @@
 // src/app/compte/page.tsx
-// Ajout : si l'utilisateur est admin, un raccourci vers le back-office apparaît
-// en haut du tableau de bord client.
+// Fichier complet : le vrai tableau de bord (dernière commande + total),
+// à remettre si son contenu a été accidentellement remplacé par celui de
+// la page parrainage.
 
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { formatPrix } from "@/lib/format";
+import { Badge } from "@/components/ui/Badge";
 
 export default async function TableauDeBordPage() {
   const session = await getServerSession(authOptions);
   const userId = (session?.user as { id: string }).id;
-  const estAdmin = (session?.user as { role?: string })?.role === "ADMIN";
+  const role = (session?.user as { role?: string })?.role;
 
-  const derniereCommande = await prisma.order.findFirst({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    include: { items: true },
-  });
-
-  const nombreCommandes = await prisma.order.count({ where: { userId } });
+  const [derniereCommande, nombreCommandes] = await Promise.all([
+    prisma.order.findFirst({ where: { userId }, orderBy: { createdAt: "desc" }, include: { items: true } }),
+    prisma.order.count({ where: { userId } }),
+  ]);
 
   return (
     <div>
-      {estAdmin && (
-        <Link
-          href="/admin"
-          className="mb-4 flex items-center gap-2 rounded-lg bg-vivrebio-rouge/10 px-4 py-2.5 text-sm font-medium text-vivrebio-rouge"
-        >
-          <ShieldCheck size={16} /> Accéder au back-office admin →
+      <p className="mb-6 text-sm text-encre/60">
+        Bienvenue {session?.user?.name ?? ""} — retrouvez ici l&apos;essentiel de votre compte Vivre Bio.
+      </p>
+
+      {role === "ADMIN" && (
+        <Link href="/admin" className="mb-4 inline-block rounded-lg bg-vivrebio-rouge px-4 py-2 text-sm font-medium text-white">
+          Accéder au back-office admin →
         </Link>
       )}
 
-      <p className="mb-6 text-sm text-gray-600">
-        Bonjour <strong>{session?.user?.name || session?.user?.email}</strong>, ravi de vous revoir.
-      </p>
-
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-xl border border-gray-100 p-4">
-          <p className="text-xs text-gray-400">Total des commandes</p>
-          <p className="mt-1 text-2xl font-semibold text-vivrebio-vert">{nombreCommandes}</p>
+        <div className="carte-3d p-5">
+          <p className="text-xs text-encre/40">Nombre de commandes</p>
+          <p className="mt-1 text-2xl font-bold text-vivrebio-vert">{nombreCommandes}</p>
         </div>
 
-        <div className="rounded-xl border border-gray-100 p-4">
-          <p className="text-xs text-gray-400">Dernière commande</p>
-          {derniereCommande ? (
-            <>
-              <p className="mt-1 text-sm font-medium">{derniereCommande.numero}</p>
-              <p className="text-xs text-gray-500">
-                {formatPrix(derniereCommande.total)} · {derniereCommande.statut}
-              </p>
-            </>
-          ) : (
-            <p className="mt-1 text-sm text-gray-400">Aucune commande pour l&apos;instant</p>
-          )}
-        </div>
+        {derniereCommande ? (
+          <Link href={`/compte/commandes/${derniereCommande.numero}`} className="carte-3d p-5 hover:bg-vert-pale">
+            <p className="text-xs text-encre/40">Dernière commande</p>
+            <p className="mt-1 text-sm font-medium text-encre">{derniereCommande.numero}</p>
+            <div className="mt-1 flex items-center justify-between">
+              <span className="text-sm text-vivrebio-vert">{formatPrix(derniereCommande.total)}</span>
+              <Badge variant={derniereCommande.statut === "EN_ATTENTE" ? "gris" : "vert"}>{derniereCommande.statut}</Badge>
+            </div>
+          </Link>
+        ) : (
+          <div className="carte-3d p-5">
+            <p className="text-xs text-encre/40">Dernière commande</p>
+            <p className="mt-1 text-sm text-encre/50">Aucune commande pour l&apos;instant.</p>
+          </div>
+        )}
       </div>
-
-      <Link href="/boutique" className="mt-6 inline-block text-sm text-vivrebio-vert hover:underline">
-        Continuer mes achats →
-      </Link>
     </div>
   );
 }

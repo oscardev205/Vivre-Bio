@@ -1,7 +1,7 @@
 // src/app/admin/commandes/[numero]/page.tsx
 // Fichier complet et à jour : sélecteur de statut, timeline visuelle, infos
-// client, détail retrait OU livraison (avec lien Google Maps), facture PDF,
-// détail code promo/points, messagerie.
+// client, détail retrait OU livraison (avec lien Google Maps), assignation
+// d'un livreur (nouveau), facture PDF, détail code promo/points, messagerie.
 
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -9,6 +9,7 @@ import { formatPrix } from "@/lib/format";
 import { StatutCommandeForm } from "@/components/admin/StatutCommandeForm";
 import { TimelineCommande } from "@/components/commande/TimelineCommande";
 import { FilDiscussion } from "@/components/messagerie/FilDiscussion";
+import { AssignerLivreurForm } from "@/components/admin/AssignerLivreurForm";
 
 const STATUTS_PAYES = ["PAYEE", "EN_PREPARATION", "EXPEDIEE", "LIVREE"];
 
@@ -26,6 +27,7 @@ export default async function AdminDetailCommandePage({
       address: true,
       user: true,
       promoCode: true,
+      livreur: { select: { id: true, nom: true, telephone: true } },
     },
   });
 
@@ -79,7 +81,7 @@ export default async function AdminDetailCommandePage({
 
               {commande.address.latitude && commande.address.longitude && (
                 
-                 <a href={`https://www.google.com/maps?q=${commande.address.latitude},${commande.address.longitude}`}
+                <a  href={`https://www.google.com/maps?q=${commande.address.latitude},${commande.address.longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-2 inline-block text-xs font-medium text-vivrebio-vert hover:underline"
@@ -93,6 +95,20 @@ export default async function AdminDetailCommandePage({
           )}
         </div>
       </div>
+
+      {commande.modeLivraison === "LIVRAISON" && (
+        <div className="mt-4">
+          {commande.livreur && (
+            <p className="mb-2 text-xs text-encre/50">
+              Actuellement assignée à <strong className="text-encre">{commande.livreur.nom ?? "Sans nom"}</strong>
+              {commande.livraisonConfirmeePar && (
+                <> · confirmée par {commande.livraisonConfirmeePar === "LIVREUR" ? "le livreur" : "le client"}</>
+              )}
+            </p>
+          )}
+          <AssignerLivreurForm numero={commande.numero} livreurActuelId={commande.livreurId} />
+        </div>
+      )}
 
       <div className="mt-4 divide-y divide-sable rounded-xl border border-sable">
         {commande.items.map((ligne) => (

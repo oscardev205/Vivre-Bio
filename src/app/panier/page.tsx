@@ -20,6 +20,7 @@ export default function PanierPage() {
   const [erreurPromo, setErreurPromo] = useState("");
   const [soldePoints, setSoldePoints] = useState(0);
   const [fideliteActive, setFideliteActive] = useState(false);
+  const [valeurPoint, setValeurPoint] = useState(5);
   const [pointsSaisis, setPointsSaisis] = useState(pointsUtilises || "");
 
   useEffect(() => {
@@ -29,10 +30,12 @@ export default function PanierPage() {
         .then((data) => {
           setSoldePoints(data.points ?? 0);
           setFideliteActive(data.fideliteActive ?? false);
+          setValeurPoint(data.valeurPoint ?? 5);
         })
         .catch(() => {
           setSoldePoints(0);
           setFideliteActive(false);
+          setValeurPoint(5);
         });
     }
   }, [session]);
@@ -68,7 +71,7 @@ export default function PanierPage() {
   }
 
   const reductionPromo = promo?.reduction ?? 0;
-  const reductionPoints = fideliteActive ? pointsUtilises * 5 : 0;
+  const reductionPoints = fideliteActive ? pointsUtilises * valeurPoint : 0;
   const sousTotalApresReduction = Math.max(0, sousTotal - reductionPromo - reductionPoints);
 
   return (
@@ -120,7 +123,7 @@ export default function PanierPage() {
           {fideliteActive && session && soldePoints > 0 && (
             <div className="mb-3 rounded-lg bg-white px-3 py-2.5 text-xs dark:bg-[#1c2921]">
               <p className="mb-1.5 font-medium text-encre">
-                Vous avez <strong className="text-vivrebio-vert">{soldePoints} points</strong> ({formatPrix(soldePoints * 5)})
+                Vous avez <strong className="text-vivrebio-vert">{soldePoints} points</strong> ({formatPrix(soldePoints * valeurPoint)} de réduction)
               </p>
               {pointsUtilises > 0 ? (
                 <div className="flex items-center justify-between">

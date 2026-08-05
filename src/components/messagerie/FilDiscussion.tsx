@@ -1,7 +1,6 @@
 // src/components/messagerie/FilDiscussion.tsx
-// Fichier complet : min-w-0 sur le champ de saisie et shrink-0 sur le bouton
-// d'envoi, pour qu'il reste toujours visible sur petit écran au lieu d'être
-// poussé hors du cadre.
+// Fichier complet : même correction que FilDiscussionParrainage — évite le
+// même bug potentiel de défilement de toute la page.
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -19,7 +18,7 @@ export function FilDiscussion({ numero }: { numero: string }) {
   const [texte, setTexte] = useState("");
   const [envoi, setEnvoi] = useState(false);
   const [charge, setCharge] = useState(false);
-  const finRef = useRef<HTMLDivElement>(null);
+  const conteneurRef = useRef<HTMLDivElement>(null);
 
   const charger = useCallback(async () => {
     const res = await fetch(`/api/commandes/${numero}/messages`);
@@ -35,7 +34,9 @@ export function FilDiscussion({ numero }: { numero: string }) {
   }, [charger]);
 
   useEffect(() => {
-    finRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (conteneurRef.current) {
+      conteneurRef.current.scrollTop = conteneurRef.current.scrollHeight;
+    }
   }, [messages]);
 
   async function handleEnvoi(e: React.FormEvent) {
@@ -60,7 +61,7 @@ export function FilDiscussion({ numero }: { numero: string }) {
     <div className="carte-3d flex min-w-0 flex-col p-4">
       <p className="mb-3 text-sm font-medium text-encre">Messages sur cette commande</p>
 
-      <div className="flex max-h-72 min-w-0 flex-col gap-2 overflow-y-auto pr-1">
+      <div ref={conteneurRef} className="flex max-h-72 min-w-0 flex-col gap-2 overflow-y-auto pr-1 scroll-smooth">
         {!charge && <p className="text-xs text-encre/40">Chargement...</p>}
         {charge && messages.length === 0 && (
           <p className="text-xs text-encre/40">Aucun message pour l&apos;instant.</p>
@@ -81,7 +82,6 @@ export function FilDiscussion({ numero }: { numero: string }) {
             </p>
           </div>
         ))}
-        <div ref={finRef} />
       </div>
 
       <form onSubmit={handleEnvoi} className="mt-3 flex min-w-0 gap-2 border-t border-sable pt-3">

@@ -1,12 +1,14 @@
 // src/components/layout/MobileMenu.tsx
-// Fichier complet : le fond du panneau (auparavant figé en #faf8f2) réagit
-// désormais au thème actif via useTheme(), au lieu d'une couleur codée en dur.
+// Fichier complet : ajout du lien "Mes livraisons" pour un livreur connecté,
+// et "Back-office admin" pour un admin — le menu desktop et mobile affichaient
+// ces liens séparément jusqu'ici, seul le mobile manquait cette mise à jour.
 "use client";
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { Menu, X, ShieldCheck, Truck } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
 type Categorie = { id: string; nom: string; slug: string };
@@ -15,6 +17,8 @@ export function MobileMenu({ categories }: { categories: Categorie[] }) {
   const [ouvert, setOuvert] = useState(false);
   const [monte, setMonte] = useState(false);
   const { sombre } = useTheme();
+  const { data: session } = useSession();
+  const role = (session?.user as { role?: string })?.role;
 
   useEffect(() => setMonte(true), []);
 
@@ -58,6 +62,25 @@ export function MobileMenu({ categories }: { categories: Categorie[] }) {
         <Link href="/contact" onClick={() => setOuvert(false)} className="rounded-lg px-3 py-2.5 hover:bg-vert-pale">
           Contact
         </Link>
+
+        {role === "ADMIN" && (
+          <Link
+            href="/admin"
+            onClick={() => setOuvert(false)}
+            className="mt-2 flex items-center gap-2 rounded-lg bg-vivrebio-rouge/10 px-3 py-2.5 text-vivrebio-rouge"
+          >
+            <ShieldCheck size={16} /> Back-office admin
+          </Link>
+        )}
+        {role === "LIVREUR" && (
+          <Link
+            href="/livreur"
+            onClick={() => setOuvert(false)}
+            className="mt-2 flex items-center gap-2 rounded-lg bg-vert-pale px-3 py-2.5 text-vivrebio-vert"
+          >
+            <Truck size={16} /> Mes livraisons
+          </Link>
+        )}
       </nav>
 
       <div className="border-t border-sable p-4">
