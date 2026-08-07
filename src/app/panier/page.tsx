@@ -112,7 +112,7 @@ export default function PanierPage() {
           ) : (
             <div className="mb-3">
               <div className="flex gap-1.5">
-                <input value={codeSaisi} onChange={(e) => setCodeSaisi(e.target.value.toUpperCase())} placeholder="Code promo" className="flex-1 rounded-lg border border-sable-fonce bg-white px-2.5 py-1.5 text-xs text-encre dark:bg-[#1c2921]" />
+                <input value={codeSaisi} onChange={(e) => setCodeSaisi(e.target.value.toUpperCase())} placeholder="Code promo" className="flex-1 rounded-lg border border-sable-fonce bg-white px-3.5 py-1.5 text-xs text-encre dark:bg-[#1c2921]" />
                 <button onClick={handleAppliquerPromo} disabled={chargementPromo} className="rounded-lg bg-vivrebio-vert px-3 text-xs font-medium text-white">{chargementPromo ? "..." : "OK"}</button>
               </div>
               {erreurPromo && <p className="mt-1 text-[11px] text-vivrebio-rouge">{erreurPromo}</p>}

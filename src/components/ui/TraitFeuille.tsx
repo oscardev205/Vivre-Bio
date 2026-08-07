@@ -1,5 +1,5 @@
 // src/components/ui/TraitFeuille.tsx
-// L'élément signature du site : un petit trait courbe en clin d'œil à la feuille du logo.
+// L'élément signature du site : un petit trait courbe en clin d'œil à la feuille du logoV.
 // À utiliser une fois par section-titre maximum — jamais en décoration systématique.
 
 export function TraitFeuille({ className = "" }: { className?: string }) {

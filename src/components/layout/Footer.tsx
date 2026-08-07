@@ -16,7 +16,7 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-4">
           <div>
             <div className="inline-block rounded-xl bg-white p-2">
-              <Image src="/logo.png" alt="Vivre Bio" width={130} height={40} className="h-9 w-auto" />
+              <Image src="/logoV.png" alt="Vivre Bio" width={130} height={40} className="h-9 w-auto" />
             </div>
             <p className="mt-3 text-sm text-white/60">
               Le meilleur de la nature pour vous.
@@ -91,7 +91,12 @@ export function Footer() {
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-white/40 md:flex-row">
           <span>© {new Date().getFullYear()} Vivre Bio. Tous droits réservés.</span>
-          <span>Cotonou, Bénin</span>
+          <a href="https://boost-expertise.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:underline">
+            <span>Réalisé par Boost-Expertise</span>
+          </a>
+          <a href="https://maps.google.com/?q=Porto-Novo,+Bénin" target="_blank" rel="noopener noreferrer" className="hover:underline">
+            <span>Porto-novo, Bénin</span>
+          </a>
         </div>
       </div>
     </footer>

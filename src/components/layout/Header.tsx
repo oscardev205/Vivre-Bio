@@ -28,7 +28,7 @@ export async function Header() {
         <div className="flex items-center gap-3">
           <MobileMenu categories={categories} />
           <Link href="/" className="flex items-center">
-            <Image src="/logo.png" alt="Vivre Bio" width={160} height={50} className="h-10 w-auto sm:h-11" priority />
+            <Image src="/logoV.png" alt="Vivre Bio" width={160} height={50} className="h-10 w-auto sm:h-11" priority />
           </Link>
         </div>
 
