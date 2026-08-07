@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
   page: { padding: 40, fontSize: 10, fontFamily: "Helvetica", color: "#1B2A1F" },
   headerRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 24 },
   logoRouge: { color: "#E31E24", fontSize: 20, fontFamily: "Helvetica-Bold" },
-  logoV.ert: { color: "#2E7D32", fontSize: 20, fontFamily: "Helvetica-Bold" },
+  logoVert: { color: "#2E7D32", fontSize: 20, fontFamily: "Helvetica-Bold" },
   slogan: { fontSize: 8, color: "#7CB342", marginTop: 2 },
   titreFacture: { fontSize: 16, fontFamily: "Helvetica-Bold", color: "#2E7D32", textAlign: "right" },
   numeroFacture: { fontSize: 9, color: "#666", textAlign: "right", marginTop: 2 },
@@ -62,7 +62,7 @@ export function FactureDocument({
       <Page size="A4" style={styles.page}>
         <View style={styles.headerRow}>
           <View>
-            <Text><Text style={styles.logoRouge}>V</Text><Text style={styles.logoV.ert}>ivre Bio</Text></Text>
+            <Text><Text style={styles.logoRouge}>V</Text><Text style={styles.logoVert}>ivre Bio</Text></Text>
             <Text style={styles.slogan}>Le meilleur de la nature pour vous</Text>
           </View>
           <View>
